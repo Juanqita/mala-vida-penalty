@@ -1,0 +1,25 @@
+LOGO DEL PORTERO — Mala Vida Fast Food
+======================================
+
+Coloca tu archivo aquí con este nombre exacto:
+
+  logo-portero.png
+
+Recomendaciones para que se vea muy bien:
+- Formato PNG con fondo transparente
+- Tamaño mínimo 512×512 px (ideal 1024×1024)
+- Logo centrado, con espacio alrededor (no recortado al borde)
+- Silueta vertical o cuadrada (tipo escudo / personaje / marca)
+
+En index.html, bloque CONFIG:
+
+  goalkeeper: {
+    logoSrc: 'assets/logo-portero.png',
+    ...
+  }
+
+Si el archivo no existe, el juego usa el portero animado por defecto.
+
+Para enviar el logo al equipo de desarrollo:
+1. Arrastra la imagen PNG en el chat de Cursor, o
+2. Guárdala en esta carpeta y pide que la integren.

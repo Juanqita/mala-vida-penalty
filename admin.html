@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Penalti · Mala Vida</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --purple: #2D0660;
+      --yellow: #F5C518;
+      --bg: #120230;
+      --card: rgba(255,255,255,.06);
+      --border: rgba(245,197,24,.35);
+      --text: #fff;
+      --muted: rgba(255,255,255,.65);
+      --danger: #ff8a80;
+      --ok: #8fd48f;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: linear-gradient(180deg, #1a0340, var(--bg));
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .wrap { max-width: 720px; margin: 0 auto; }
+    h1 { font-size: 1.5rem; margin-bottom: 4px; }
+    .sub { color: var(--muted); font-size: .9rem; margin-bottom: 24px; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .card h2 { font-size: 1rem; margin-bottom: 12px; color: var(--yellow); }
+    label { display: block; font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 6px; }
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.15);
+      background: rgba(0,0,0,.25);
+      color: var(--text);
+      font: inherit;
+    }
+    textarea { min-height: 140px; resize: vertical; line-height: 1.45; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+    button {
+      padding: 12px 18px;
+      border: none;
+      border-radius: 999px;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--yellow);
+      color: var(--purple);
+    }
+    button.secondary { background: transparent; color: var(--text); border: 1px solid rgba(255,255,255,.3); }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .status { margin-top: 10px; font-size: .85rem; }
+    .status.err { color: var(--danger); }
+    .status.ok { color: var(--ok); }
+    .pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: .75rem;
+      background: rgba(245,197,24,.15);
+      color: var(--yellow);
+      margin-bottom: 12px;
+    }
+    .otp-item {
+      padding: 14px;
+      border-radius: 12px;
+      background: rgba(0,0,0,.22);
+      border: 1px solid rgba(255,255,255,.08);
+      margin-bottom: 10px;
+    }
+    .otp-item strong { color: var(--yellow); font-size: 1.1rem; }
+    .otp-meta { font-size: .8rem; color: var(--muted); margin-top: 4px; }
+    .shot-item { font-size: .85rem; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.06); }
+    .hidden { display: none; }
+    .login-card { max-width: 420px; margin: 60px auto; }
+    code { word-break: break-all; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div id="login-view" class="card login-card">
+      <h1>Panel staff</h1>
+      <p class="sub">Penalti Mundial · Mala Vida</p>
+      <label for="api-url">URL de la API</label>
+      <input id="api-url" type="url" placeholder="https://mala-vida-penalty-api.onrender.com">
+      <label for="admin-key" style="margin-top:12px">Clave admin</label>
+      <input id="admin-key" type="password" placeholder="ADMIN_SECRET">
+      <div class="row">
+        <button type="button" id="btn-login">Entrar</button>
+      </div>
+      <p class="status err hidden" id="login-error"></p>
+    </div>
+
+    <div id="app-view" class="hidden">
+      <h1>Panel staff · Penalti</h1>
+      <p class="sub">Genera links, envía códigos OTP y revisa jugadas.</p>
+      <span class="pill" id="campaign-pill">Cargando campaña…</span>
+
+      <div class="card">
+        <h2>1. Respuesta inicial (copiar al recibir mensaje)</h2>
+        <textarea id="tpl-first" readonly></textarea>
+        <div class="row"><button type="button" class="copy-btn" data-target="tpl-first">Copiar mensaje</button></div>
+      </div>
+
+      <div class="card">
+        <h2>2. Generar link personal (flujo principal)</h2>
+        <label for="invite-phone">WhatsApp del cliente (+57…)</label>
+        <input id="invite-phone" type="tel" inputmode="tel" placeholder="300 123 4567">
+        <div class="row">
+          <button type="button" id="btn-invite">Generar link</button>
+        </div>
+        <p class="status hidden" id="invite-status"></p>
+        <label for="invite-link" style="margin-top:12px">Link</label>
+        <input id="invite-link" type="text" readonly>
+        <label for="invite-message" style="margin-top:12px">Mensaje WhatsApp listo</label>
+        <textarea id="invite-message" readonly></textarea>
+        <div class="row"><button type="button" class="copy-btn" data-target="invite-message">Copiar para WhatsApp</button></div>
+      </div>
+
+      <div class="card">
+        <h2>3. Códigos OTP pendientes (flujo alternativo)</h2>
+        <p class="sub" style="margin-bottom:12px">Si el cliente entró sin link y pidió código en el juego, aparece aquí. Envíalo por WhatsApp.</p>
+        <div class="row">
+          <button type="button" id="btn-refresh-otp">Actualizar</button>
+          <button type="button" class="secondary" id="btn-auto-otp">Auto 15s</button>
+        </div>
+        <div id="otp-list" style="margin-top:14px"></div>
+      </div>
+
+      <div class="card">
+        <h2>4. Jugadas registradas</h2>
+        <div class="row"><button type="button" id="btn-refresh-shots">Actualizar lista</button></div>
+        <div id="shots-list" style="margin-top:14px"></div>
+      </div>
+
+      <div class="card">
+        <h2>5. Mensaje premio (si ganó)</h2>
+        <textarea id="tpl-prize" readonly></textarea>
+        <p class="sub" style="margin-top:8px">Edita premio y código antes de enviar.</p>
+      </div>
+
+      <div class="row"><button type="button" class="secondary" id="btn-logout">Cerrar sesión</button></div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'malaVidaAdmin';
+
+    function loadCfg() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; }
+    }
+    function saveCfg(cfg) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
+    }
+
+    let cfg = loadCfg();
+    let otpTimer = null;
+
+    const els = {
+      loginView: document.getElementById('login-view'),
+      appView: document.getElementById('app-view'),
+      apiUrl: document.getElementById('api-url'),
+      adminKey: document.getElementById('admin-key'),
+      loginError: document.getElementById('login-error'),
+      campaignPill: document.getElementById('campaign-pill'),
+      tplFirst: document.getElementById('tpl-first'),
+      tplPrize: document.getElementById('tpl-prize'),
+      invitePhone: document.getElementById('invite-phone'),
+      inviteStatus: document.getElementById('invite-status'),
+      inviteLink: document.getElementById('invite-link'),
+      inviteMessage: document.getElementById('invite-message'),
+      otpList: document.getElementById('otp-list'),
+      shotsList: document.getElementById('shots-list')
+    };
+
+    if (cfg.apiBaseUrl) els.apiUrl.value = cfg.apiBaseUrl;
+
+    function apiBase() {
+      return (cfg.apiBaseUrl || '').replace(/\/$/, '');
+    }
+
+    async function api(path, options = {}) {
+      const res = await fetch(`${apiBase()}${path}`, {
+        ...options,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${cfg.adminKey}`,
+          ...(options.headers || {})
+        }
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.message || data.error || 'Error API');
+      return data;
+    }
+
+    function showLoginError(msg) {
+      els.loginError.textContent = msg;
+      els.loginError.classList.remove('hidden');
+    }
+
+    async function bootApp() {
+      els.loginView.classList.add('hidden');
+      els.appView.classList.remove('hidden');
+      const campaign = await fetch(`${apiBase()}/api/campaign`).then(r => r.json());
+      els.campaignPill.textContent = campaign.active
+        ? `Campaña activa · ${campaign.start} → ${campaign.end}`
+        : `Campaña INACTIVA · ${campaign.start} → ${campaign.end}`;
+
+      const tpl = await api('/api/admin/templates');
+      els.tplFirst.value = tpl.firstReply;
+      els.tplPrize.value = tpl.prizeExample;
+      await refreshOtp();
+      await refreshShots();
+    }
+
+    document.getElementById('btn-login').addEventListener('click', async () => {
+      cfg.apiBaseUrl = els.apiUrl.value.trim();
+      cfg.adminKey = els.adminKey.value.trim();
+      if (!cfg.apiBaseUrl || !cfg.adminKey) {
+        showLoginError('Completa URL de API y clave admin.');
+        return;
+      }
+      saveCfg(cfg);
+      els.loginError.classList.add('hidden');
+      try {
+        await api('/api/admin/templates');
+        await bootApp();
+      } catch (e) {
+        showLoginError(e.message);
+      }
+    });
+
+    document.getElementById('btn-logout').addEventListener('click', () => {
+      cfg.adminKey = '';
+      saveCfg(cfg);
+      location.reload();
+    });
+
+    document.querySelectorAll('.copy-btn').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const target = document.getElementById(btn.dataset.target);
+        try {
+          await navigator.clipboard.writeText(target.value);
+          btn.textContent = '¡Copiado!';
+          setTimeout(() => { btn.textContent = 'Copiar mensaje'; }, 1500);
+        } catch {
+          target.select();
+        }
+      });
+    });
+
+    document.getElementById('btn-invite').addEventListener('click', async () => {
+      els.inviteStatus.className = 'status hidden';
+      try {
+        const data = await api('/api/admin/invite/create', {
+          method: 'POST',
+          body: JSON.stringify({ phone: els.invitePhone.value, countryCode: '57' })
+        });
+        els.inviteLink.value = data.link;
+        els.inviteMessage.value = data.whatsappMessage;
+        els.inviteStatus.textContent = `Link generado para ${data.phoneDisplay}. Expira: ${new Date(data.expiresAt).toLocaleString('es-CO')}`;
+        els.inviteStatus.className = 'status ok';
+      } catch (e) {
+        els.inviteStatus.textContent = e.message;
+        els.inviteStatus.className = 'status err';
+      }
+    });
+
+    async function refreshOtp() {
+      try {
+        const data = await api('/api/admin/otp-pending');
+        if (!data.pending.length) {
+          els.otpList.innerHTML = '<p class="sub">No hay códigos pendientes.</p>';
+          return;
+        }
+        els.otpList.innerHTML = data.pending.map((o) => `
+          <div class="otp-item">
+            <div><strong>${o.phoneDisplay}</strong> · código <strong>${o.code}</strong></div>
+            <div class="otp-meta">Expira: ${new Date(o.expiresAt).toLocaleString('es-CO')}</div>
+            <div class="row" style="margin-top:8px">
+              <button type="button" class="copy-otp" data-msg="${encodeURIComponent(o.whatsappMessage)}">Copiar mensaje OTP</button>
+            </div>
+          </div>
+        `).join('');
+        els.otpList.querySelectorAll('.copy-otp').forEach((btn) => {
+          btn.addEventListener('click', async () => {
+            const msg = decodeURIComponent(btn.dataset.msg);
+            await navigator.clipboard.writeText(msg);
+            btn.textContent = '¡Copiado!';
+          });
+        });
+      } catch (e) {
+        els.otpList.innerHTML = `<p class="status err">${e.message}</p>`;
+      }
+    }
+
+    async function refreshShots() {
+      try {
+        const data = await api('/api/admin/shots');
+        if (!data.shots.length) {
+          els.shotsList.innerHTML = '<p class="sub">Aún no hay jugadas.</p>';
+          return;
+        }
+        els.shotsList.innerHTML = `<p class="sub">Total: ${data.total}</p>` + data.shots.map((s) => `
+          <div class="shot-item">
+            ${s.phoneDisplay} · ${s.isLoss ? 'Sin premio' : s.prizeName}${s.code ? ` · <code>${s.code}</code>` : ''}
+            <div class="otp-meta">${new Date(s.createdAt).toLocaleString('es-CO')}</div>
+          </div>
+        `).join('');
+      } catch (e) {
+        els.shotsList.innerHTML = `<p class="status err">${e.message}</p>`;
+      }
+    }
+
+    document.getElementById('btn-refresh-otp').addEventListener('click', refreshOtp);
+    document.getElementById('btn-refresh-shots').addEventListener('click', refreshShots);
+    document.getElementById('btn-auto-otp').addEventListener('click', (e) => {
+      if (otpTimer) {
+        clearInterval(otpTimer);
+        otpTimer = null;
+        e.target.textContent = 'Auto 15s';
+        return;
+      }
+      e.target.textContent = 'Detener auto';
+      otpTimer = setInterval(refreshOtp, 15000);
+    });
+
+    if (cfg.apiBaseUrl && cfg.adminKey) {
+      bootApp().catch(() => {});
+    }
+  </script>
+</body>
+</html>
