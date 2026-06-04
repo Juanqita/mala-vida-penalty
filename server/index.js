@@ -240,7 +240,7 @@ function buildInviteLink(token) {
 
 function buildWhatsAppInviteMessage(phone, link) {
   return [
-    '⚽ *Mala Vida — Penalti del Mundial*',
+    '⚽ *Mala Vida — Penalti del Mundial 2026*',
     '',
     `Hola, aquí va tu acceso personal al penalti (${formatPhoneDisplay(phone)}):`,
     link,
@@ -249,7 +249,7 @@ function buildWhatsAppInviteMessage(phone, link) {
     '• Ábrelo desde el celular.',
     '• Si el link expira, escríbenos de nuevo.',
     '',
-    '¡Suerte, papá! 🥅'
+    '¡Suerte! 🥅'
   ].join('\n');
 }
 
@@ -268,14 +268,14 @@ function buildWhatsAppFirstReply(gameUrl) {
   return [
     '⚽ ¡Hola! Gracias por escribir a *Mala Vida Fast Food*.',
     '',
-    'Tenemos un *penalti del Mundial* con premio 🎁',
+    'Tenemos un *penalti del Mundial 2026* con premio 🎁',
     '',
     'Para jugar:',
     '1️⃣ Confírmame tu número de WhatsApp (con código de país, ej. +57 300…)',
     '2️⃣ Te envío *tu link personal* en seguida',
     '',
     'Reglas rápidas:',
-    '• 1 penalti por número durante todo el mes',
+    '• 1 penalti por número durante todo el mes del Mundial',
     '• Premio se reclama por este mismo chat',
     '',
     `(Alternativa: entra a ${gameUrl} y pide código de verificación)`
@@ -511,179 +511,3 @@ const server = createServer(async (req, res) => {
         });
         return;
       }
-
-      const db = loadDb();
-      purgeExpired(db);
-
-      const active = findActiveOtp(phone);
-      if (active) {
-        sendJson(res, 200, {
-          ok: true,
-          message: 'Ya hay un código activo. Revisa WhatsApp o espera a que expire.',
-          expiresAt: active.expires_at
-        });
-        return;
-      }
-
-      const otp = {
-        id: randomToken(8),
-        phone,
-        campaign_id: CAMPAIGN_ID,
-        code: randomOtp(),
-        created_at: new Date().toISOString(),
-        expires_at: new Date(Date.now() + OTP_TTL_MS).toISOString(),
-        verified_at: null
-      };
-      db.otp_requests.push(otp);
-      saveDb(db);
-
-      sendJson(res, 200, {
-        ok: true,
-        message: 'Te enviaremos el código por WhatsApp en los próximos minutos.',
-        expiresAt: otp.expires_at
-      });
-      return;
-    }
-
-    if (url.pathname === '/api/otp/verify') {
-      if (!isCampaignActive()) {
-        sendJson(res, 403, campaignError());
-        return;
-      }
-
-      const phone = normalizePhone(body.phone, body.countryCode);
-      const code = String(body.code || '').replace(/\D/g, '');
-      if (!phone || code.length !== 6) {
-        sendJson(res, 400, { error: 'invalid_input', message: 'Número o código inválido.' });
-        return;
-      }
-
-      const db = loadDb();
-      const otp = findActiveOtp(phone);
-      if (!otp || !secureEqual(otp.code, code)) {
-        sendJson(res, 401, { error: 'invalid_code', message: 'Código incorrecto o expirado.' });
-        return;
-      }
-
-      otp.verified_at = new Date().toISOString();
-      saveDb(db);
-
-      const session = createSession(db, phone);
-      sendJson(res, 200, {
-        ok: true,
-        phone,
-        sessionToken: session.token,
-        expiresAt: session.expires_at
-      });
-      return;
-    }
-
-    if (url.pathname === '/api/register') {
-      if (!isCampaignActive()) {
-        sendJson(res, 403, campaignError());
-        return;
-      }
-
-      const session = findSession(body.sessionToken);
-      if (!session || new Date(session.expires_at).getTime() <= Date.now()) {
-        sendJson(res, 401, { error: 'invalid_session', message: 'Sesión expirada.' });
-        return;
-      }
-
-      const phone = session.phone;
-      const result = body.result;
-      if (!result || typeof result !== 'object') {
-        sendJson(res, 400, { error: 'invalid_result', message: 'Resultado de tiro requerido.' });
-        return;
-      }
-
-      const existing = findShot(phone);
-      if (existing) {
-        sendJson(res, 409, {
-          error: 'already_played',
-          result: rowToResult(existing)
-        });
-        return;
-      }
-
-      const row = {
-        phone,
-        campaign_id: CAMPAIGN_ID,
-        prize_id: String(result.prizeId || '').slice(0, 64),
-        prize_name: String(result.prizeName || '').slice(0, 128),
-        is_loss: result.isLoss ? 1 : 0,
-        loss_type: result.lossType ? String(result.lossType).slice(0, 32) : null,
-        code: result.code ? String(result.code).slice(0, 64) : null,
-        created_at: new Date().toISOString()
-      };
-
-      const db = loadDb();
-      db.shots.push(row);
-      saveDb(db);
-
-      sendJson(res, 201, { ok: true, phone, campaignId: CAMPAIGN_ID, result: rowToResult(row) });
-      return;
-    }
-
-    if (url.pathname === '/api/admin/invite/create') {
-      if (!requireAdmin(req, res)) return;
-      if (!isCampaignActive()) {
-        sendJson(res, 403, campaignError());
-        return;
-      }
-
-      const phone = normalizePhone(body.phone, body.countryCode);
-      if (!phone) {
-        sendJson(res, 400, { error: 'invalid_phone', message: 'Número inválido.' });
-        return;
-      }
-
-      const existing = findShot(phone);
-      if (existing) {
-        sendJson(res, 409, {
-          error: 'already_played',
-          message: 'Este número ya jugó.',
-          result: rowToResult(existing)
-        });
-        return;
-      }
-
-      const db = loadDb();
-      const token = randomToken(18);
-      const invite = {
-        token,
-        phone,
-        campaign_id: CAMPAIGN_ID,
-        created_at: new Date().toISOString(),
-        expires_at: new Date(Date.now() + INVITE_TTL_MS).toISOString(),
-        opened_at: null,
-        used_at: null
-      };
-      db.invites.push(invite);
-      saveDb(db);
-
-      const link = buildInviteLink(token);
-      sendJson(res, 201, {
-        ok: true,
-        phone,
-        phoneDisplay: formatPhoneDisplay(phone),
-        token,
-        link,
-        expiresAt: invite.expires_at,
-        whatsappMessage: buildWhatsAppInviteMessage(phone, link)
-      });
-      return;
-    }
-
-    sendJson(res, 404, { error: 'not_found' });
-  } catch (err) {
-    console.error(err);
-    sendJson(res, 500, { error: 'server_error', message: 'Error interno del servidor.' });
-  }
-});
-
-server.listen(PORT, () => {
-  console.log(`Penalty API on http://localhost:${PORT}`);
-  console.log(`Campaign ${CAMPAIGN_ID}: ${CAMPAIGN_START} → ${CAMPAIGN_END}`);
-  console.log(`Game URL: ${GAME_BASE_URL}`);
-});
