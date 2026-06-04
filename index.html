@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#2D0660">
-  <meta name="description" content="Penalti Día del Padre 2026 — Mala Vida Fast Food. ¿Tienes el toque, papá?">
-  <title>Penalti Papá · Mala Vida Fast Food</title>
+  <meta name="description" content="Penalti del Mundial 2026 — Mala Vida Fast Food. ¿Tienes el toque? ¡Demuéstralo!">
+  <title>Penalti del Mundial · Mala Vida Fast Food</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
@@ -1029,9 +1029,9 @@
     <!-- Pantalla inicial -->
     <section id="screen-start" class="screen active" aria-label="Inicio">
       <div class="logo-badge">MALA VIDA<span>FAST FOOD</span></div>
-      <p class="tag-mundial">⚽ Día del Padre · Modo Mundial</p>
-      <h1 class="hook-title" id="hook-title">¿Tienes el toque, papá?</h1>
-      <p class="hook-sub" id="hook-sub">Este gol es para ti. Apunta a las esquinas del arco y arrastra para disparar.</p>
+      <p class="tag-mundial">⚽ Mundial 2026 · Edición Especial</p>
+      <h1 class="hook-title" id="hook-title">¿Tienes el toque?</h1>
+      <p class="hook-sub" id="hook-sub">El Mundial llegó a Mala Vida. Apunta a las esquinas del arco y arrastra para disparar.</p>
       <form class="phone-form" id="phone-form" novalidate>
         <label class="phone-label" for="input-whatsapp">Tu WhatsApp</label>
         <div class="phone-row">
@@ -1166,8 +1166,8 @@
       // Clave localStorage (cambiar si quieres resetear jugadas de prueba)
       storageKey: 'malaVidaPenalty_v1',
 
-      // API — en producción cambia apiBaseUrl (ver GUIA-COMPLETA.md)
-      apiBaseUrl: 'mala-vida-penalty-production.up.railway.app',
+      // API — producción Railway
+      apiBaseUrl: 'https://mala-vida-penalty-production.up.railway.app',
       defaultCountryCode: '57',
       campaignId: 'mundial-2026',
       phoneStorageKey: 'malaVidaPenalty_phone',
@@ -1179,8 +1179,8 @@
 
       // Textos de pantalla inicial (se elige uno al azar)
       introTitles: [
-        '¿Tienes el toque, papá?',
-        'Este gol es para ti.'
+        '¿Tienes el toque?',
+        'Este gol es tuyo.'
       ],
 
       // Mensajes de resultado
@@ -1208,7 +1208,7 @@
         papitas:      { id: 'papitas',      name: 'Papitas gratis',                    prefix: 'PAP' },
         bebida:       { id: 'bebida',       name: 'Bebida gratis',                     prefix: 'BEB' },
         hamburguesa:  { id: 'hamburguesa',  name: '2x1 en Hamburguesa Mala Vida',      prefix: '2X1' },
-        descuento:    { id: 'descuento',    name: '10% de descuento',                  prefix: 'DSC' },
+        descuento:    { id: 'descuento',    name: '15% de descuento',                  prefix: 'DSC' },
         atajada:      { id: 'atajada',      name: 'Atajada (sin premio)',              prefix: null, isLoss: true, lossType: 'save' },
         fallido:      { id: 'fallido',      name: 'Tiro fallido (sin premio)',       prefix: null, isLoss: true, lossType: 'miss' },
         alcanzada:    { id: 'alcanzada',    name: 'Portero alcanzó el balón (sin premio)', prefix: null, isLoss: true, lossType: 'reachSave' }
@@ -1253,6 +1253,13 @@
        * 0 = nunca · 0.28 = 28% de los tiros en zonas menores son atajados por alcance
        */
       gkReachSaveChance: 0.28,
+
+      /*
+       * Probabilidad global de atajada sobre tiros "válidos" (que no caen en zona save ni reach_save).
+       * 0.50 = exactamente el 50% de los tiros acaban como atajada,
+       *        y el otro 50% son gol con premio distribuido según zonas y minorPrizeWeights.
+       */
+      globalSaveChance: 0.50,
 
       // Física del disparo
       shot: {
@@ -1577,8 +1584,8 @@
       const t = CONFIG.introTitles[Math.floor(Math.random() * CONFIG.introTitles.length)];
       els.hookTitle.textContent = t;
       els.hookSub.textContent = t.includes('toque')
-        ? 'Modo Mundial · Día del Padre. Arrastra desde la pelota hacia el arco.'
-        : 'Modo Mundial · Día del Padre. Las esquinas altas esconden el premio mayor.';
+        ? 'Modo Mundial 2026. Arrastra desde la pelota hacia el arco.'
+        : 'Modo Mundial 2026. Las esquinas altas esconden el premio mayor.';
     }
 
     function generateCode(prefix) {
@@ -1643,6 +1650,15 @@
       if (zone && zone.tier !== 'major' && Math.random() < CONFIG.gkReachSaveChance) {
         return { kind: 'reach_save', prizeId: 'alcanzada', zone, nx: clampedNx, ny: clampedNy, power };
       }
+
+      // ── DISTRIBUCIÓN 50-50 GLOBAL ──────────────────────────────────────────
+      // Si el azar dicta atajada (50%), forzamos save independiente de la zona
+      // (sólo aplica a tiros que habrían sido gol, es decir zona != save)
+      if (Math.random() < CONFIG.globalSaveChance) {
+        return { kind: 'save', reason: 'center', prizeId: 'atajada', zone, nx: clampedNx, ny: clampedNy, power };
+      }
+      // ────────────────────────────────────────────────────────────────────────
+
       return { kind: 'goal', prizeId, zone, nx: clampedNx, ny: clampedNy, power };
     }
 
