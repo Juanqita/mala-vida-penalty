@@ -2,343 +2,511 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Admin Penalti · Mala Vida</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>Admin · Mala Vida Penalti</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --purple: #2D0660;
-      --yellow: #F5C518;
-      --bg: #120230;
-      --card: rgba(255,255,255,.06);
-      --border: rgba(245,197,24,.35);
+      --bg: #0d0120;
+      --card: #1a0338;
+      --accent: #F5C518;
+      --accent2: #ff6b35;
+      --purple: #7c3aed;
       --text: #fff;
-      --muted: rgba(255,255,255,.65);
-      --danger: #ff8a80;
-      --ok: #8fd48f;
+      --muted: rgba(255,255,255,.5);
+      --border: rgba(245,197,24,.2);
+      --ok: #4ade80;
+      --err: #f87171;
+      --radius: 18px;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
     body {
-      font-family: 'DM Sans', system-ui, sans-serif;
-      background: linear-gradient(180deg, #1a0340, var(--bg));
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
       color: var(--text);
-      min-height: 100vh;
-      padding: 20px;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
     }
-    .wrap { max-width: 720px; margin: 0 auto; }
-    h1 { font-size: 1.5rem; margin-bottom: 4px; }
-    .sub { color: var(--muted); font-size: .9rem; margin-bottom: 24px; }
+
+    /* ── LOGIN ─────────────────────────────── */
+    #screen-login {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 24px;
+      gap: 20px;
+    }
+    .login-logo { font-family: 'Syne', sans-serif; font-size: 1.1rem; letter-spacing: .15em; color: var(--accent); text-transform: uppercase; }
+    .login-title { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; text-align: center; line-height: 1.1; }
+    .login-title span { color: var(--accent); }
+    .login-box { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 12px; }
+    .login-box input {
+      width: 100%; padding: 16px 18px;
+      border-radius: 14px; border: 1.5px solid var(--border);
+      background: var(--card); color: var(--text);
+      font: 600 1rem 'DM Sans', sans-serif;
+      outline: none; letter-spacing: .08em;
+    }
+    .login-box input:focus { border-color: var(--accent); }
+    .btn-primary {
+      width: 100%; padding: 17px;
+      border-radius: 999px; border: none;
+      background: var(--accent); color: #0d0120;
+      font: 700 1.05rem 'DM Sans', sans-serif;
+      cursor: pointer; transition: opacity .15s, transform .1s;
+      letter-spacing: .02em;
+    }
+    .btn-primary:active { opacity: .85; transform: scale(.98); }
+    .btn-primary:disabled { opacity: .45; cursor: not-allowed; }
+
+    /* ── MAIN APP ──────────────────────────── */
+    #screen-app { flex: 1; display: none; flex-direction: column; }
+
+    /* Header */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+      position: sticky; top: 0; z-index: 10;
+      background: rgba(13,1,32,.95); backdrop-filter: blur(12px);
+    }
+    .topbar-brand { font-family: 'Syne', sans-serif; font-size: .95rem; color: var(--accent); letter-spacing: .12em; }
+    .topbar-right { display: flex; align-items: center; gap: 10px; }
+    .badge-live { display: flex; align-items: center; gap: 5px; font-size: .72rem; font-weight: 600; color: var(--ok); }
+    .dot-live { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
+    .btn-logout { background: none; border: 1px solid rgba(255,255,255,.15); color: var(--muted); font: 500 .78rem 'DM Sans',sans-serif; padding: 6px 12px; border-radius: 999px; cursor: pointer; }
+
+    /* Content */
+    .content { padding: 20px; display: flex; flex-direction: column; gap: 16px; max-width: 520px; margin: 0 auto; width: 100%; }
+
+    /* Stat bar */
+    .statbar {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+    .stat {
+      background: var(--card); border-radius: 14px;
+      border: 1px solid var(--border);
+      padding: 14px 12px; text-align: center;
+    }
+    .stat-n { font-family: 'Syne',sans-serif; font-size: 1.7rem; font-weight: 800; color: var(--accent); line-height: 1; }
+    .stat-l { font-size: .68rem; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: .07em; }
+
+    /* Card */
     .card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 16px;
+      border-radius: var(--radius);
       padding: 20px;
-      margin-bottom: 16px;
     }
-    .card h2 { font-size: 1rem; margin-bottom: 12px; color: var(--yellow); }
-    label { display: block; font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 6px; }
-    input, textarea {
-      width: 100%;
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,.15);
-      background: rgba(0,0,0,.25);
-      color: var(--text);
-      font: inherit;
+    .card-title {
+      font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
+      margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
     }
-    textarea { min-height: 140px; resize: vertical; line-height: 1.45; }
-    .row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
-    button {
-      padding: 12px 18px;
-      border: none;
-      border-radius: 999px;
-      font: inherit;
-      font-weight: 600;
-      cursor: pointer;
-      background: var(--yellow);
-      color: var(--purple);
+    .card-title .icon { font-size: 1.1rem; }
+
+    /* Input de teléfono */
+    .phone-row { display: flex; gap: 8px; }
+    .prefix-box {
+      padding: 14px 12px; border-radius: 12px;
+      background: rgba(255,255,255,.07); border: 1.5px solid var(--border);
+      color: var(--muted); font: 600 1rem 'DM Sans',sans-serif;
+      white-space: nowrap; min-width: 56px; text-align: center;
     }
-    button.secondary { background: transparent; color: var(--text); border: 1px solid rgba(255,255,255,.3); }
-    button:disabled { opacity: .5; cursor: not-allowed; }
-    .status { margin-top: 10px; font-size: .85rem; }
-    .status.err { color: var(--danger); }
-    .status.ok { color: var(--ok); }
-    .pill {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 999px;
-      font-size: .75rem;
-      background: rgba(245,197,24,.15);
-      color: var(--yellow);
-      margin-bottom: 12px;
+    .phone-input {
+      flex: 1; padding: 14px 16px;
+      border-radius: 12px; border: 1.5px solid var(--border);
+      background: rgba(255,255,255,.05); color: var(--text);
+      font: 500 1.05rem 'DM Sans',sans-serif;
+      outline: none; -webkit-appearance: none;
     }
-    .otp-item {
-      padding: 14px;
-      border-radius: 12px;
-      background: rgba(0,0,0,.22);
-      border: 1px solid rgba(255,255,255,.08);
-      margin-bottom: 10px;
+    .phone-input:focus { border-color: var(--accent); background: rgba(255,255,255,.08); }
+    .phone-input::placeholder { color: var(--muted); }
+    .btn-generar {
+      width: 100%; margin-top: 12px; padding: 16px;
+      border-radius: 999px; border: none;
+      background: var(--accent); color: #0d0120;
+      font: 700 1rem 'DM Sans',sans-serif;
+      cursor: pointer; transition: opacity .15s, transform .1s;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
     }
-    .otp-item strong { color: var(--yellow); font-size: 1.1rem; }
-    .otp-meta { font-size: .8rem; color: var(--muted); margin-top: 4px; }
-    .shot-item { font-size: .85rem; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,.06); }
-    .hidden { display: none; }
-    .login-card { max-width: 420px; margin: 60px auto; }
-    code { word-break: break-all; }
+    .btn-generar:active { opacity: .85; transform: scale(.98); }
+    .btn-generar:disabled { opacity: .45; cursor: not-allowed; }
+
+    /* Resultado del link */
+    .result-box {
+      margin-top: 14px; display: none;
+      flex-direction: column; gap: 10px;
+    }
+    .result-box.show { display: flex; }
+    .result-msg {
+      background: rgba(74,222,128,.08);
+      border: 1px solid rgba(74,222,128,.25);
+      border-radius: 12px; padding: 14px;
+      font-size: .88rem; line-height: 1.5;
+      color: rgba(255,255,255,.9);
+      word-break: break-all;
+    }
+    .result-msg.err-msg {
+      background: rgba(248,113,113,.08);
+      border-color: rgba(248,113,113,.25);
+      color: var(--err);
+    }
+    .result-msg.warn-msg {
+      background: rgba(251,191,36,.08);
+      border-color: rgba(251,191,36,.25);
+      color: #fbbf24;
+    }
+    .btn-wa {
+      width: 100%; padding: 16px;
+      border-radius: 999px; border: none;
+      background: #25D366; color: #fff;
+      font: 700 1rem 'DM Sans',sans-serif;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: opacity .15s;
+    }
+    .btn-wa:active { opacity: .85; }
+
+    /* Lista de tiros */
+    .shots-list { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+    .shot-item {
+      border-radius: 12px; padding: 12px 14px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.07);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .shot-icon { font-size: 1.4rem; flex-shrink: 0; }
+    .shot-info { flex: 1; min-width: 0; }
+    .shot-phone { font-size: .88rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .shot-prize { font-size: .75rem; color: var(--muted); margin-top: 2px; }
+    .shot-code { font-size: .7rem; color: var(--accent); margin-top: 2px; font-weight: 600; letter-spacing: .05em; }
+    .shot-time { font-size: .7rem; color: var(--muted); flex-shrink: 0; text-align: right; }
+
+    .empty-state { text-align: center; padding: 28px 0; color: var(--muted); font-size: .9rem; }
+
+    /* Spinner */
+    .spinner { width: 18px; height: 18px; border: 2.5px solid rgba(13,1,32,.3); border-top-color: #0d0120; border-radius: 50%; animation: spin .6s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Tabs */
+    .tabs { display: flex; gap: 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 4px; }
+    .tab { flex: 1; padding: 11px 8px; text-align: center; font: 600 .82rem 'DM Sans',sans-serif; cursor: pointer; background: transparent; border: none; color: var(--muted); transition: background .15s, color .15s; }
+    .tab.active { background: var(--accent); color: #0d0120; }
+
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    /* Refresh */
+    .refresh-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .btn-refresh { background: none; border: 1px solid var(--border); color: var(--accent); font: 600 .8rem 'DM Sans',sans-serif; padding: 7px 14px; border-radius: 999px; cursor: pointer; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div id="login-view" class="card login-card">
-      <h1>Panel staff</h1>
-      <p class="sub">Penalti Mundial · Mala Vida</p>
-      <label for="api-url">URL de la API</label>
-      <input id="api-url" type="url" placeholder="https://mala-vida-penalty-api.onrender.com">
-      <label for="admin-key" style="margin-top:12px">Clave admin</label>
-      <input id="admin-key" type="password" placeholder="ADMIN_SECRET">
-      <div class="row">
-        <button type="button" id="btn-login">Entrar</button>
-      </div>
-      <p class="status err hidden" id="login-error"></p>
-    </div>
 
-    <div id="app-view" class="hidden">
-      <h1>Panel staff · Penalti</h1>
-      <p class="sub">Genera links, envía códigos OTP y revisa jugadas.</p>
-      <span class="pill" id="campaign-pill">Cargando campaña…</span>
+<!-- LOGIN -->
+<div id="screen-login">
+  <div class="login-logo">Mala Vida Fast Food</div>
+  <div class="login-title">Panel<br><span>Operador</span></div>
+  <div class="login-box">
+    <input id="secret-input" type="password" placeholder="Contraseña" autocomplete="current-password">
+    <button class="btn-primary" id="btn-login">Entrar</button>
+    <div id="login-err" style="color:var(--err);font-size:.85rem;text-align:center;display:none;">Contraseña incorrecta</div>
+  </div>
+</div>
 
-      <div class="card">
-        <h2>1. Respuesta inicial (copiar al recibir mensaje)</h2>
-        <textarea id="tpl-first" readonly></textarea>
-        <div class="row"><button type="button" class="copy-btn" data-target="tpl-first">Copiar mensaje</button></div>
-      </div>
-
-      <div class="card">
-        <h2>2. Generar link personal (flujo principal)</h2>
-        <label for="invite-phone">WhatsApp del cliente (+57…)</label>
-        <input id="invite-phone" type="tel" inputmode="tel" placeholder="300 123 4567">
-        <div class="row">
-          <button type="button" id="btn-invite">Generar link</button>
-        </div>
-        <p class="status hidden" id="invite-status"></p>
-        <label for="invite-link" style="margin-top:12px">Link</label>
-        <input id="invite-link" type="text" readonly>
-        <label for="invite-message" style="margin-top:12px">Mensaje WhatsApp listo</label>
-        <textarea id="invite-message" readonly></textarea>
-        <div class="row"><button type="button" class="copy-btn" data-target="invite-message">Copiar para WhatsApp</button></div>
-      </div>
-
-      <div class="card">
-        <h2>3. Códigos OTP pendientes (flujo alternativo)</h2>
-        <p class="sub" style="margin-bottom:12px">Si el cliente entró sin link y pidió código en el juego, aparece aquí. Envíalo por WhatsApp.</p>
-        <div class="row">
-          <button type="button" id="btn-refresh-otp">Actualizar</button>
-          <button type="button" class="secondary" id="btn-auto-otp">Auto 15s</button>
-        </div>
-        <div id="otp-list" style="margin-top:14px"></div>
-      </div>
-
-      <div class="card">
-        <h2>4. Jugadas registradas</h2>
-        <div class="row"><button type="button" id="btn-refresh-shots">Actualizar lista</button></div>
-        <div id="shots-list" style="margin-top:14px"></div>
-      </div>
-
-      <div class="card">
-        <h2>5. Mensaje premio (si ganó)</h2>
-        <textarea id="tpl-prize" readonly></textarea>
-        <p class="sub" style="margin-top:8px">Edita premio y código antes de enviar.</p>
-      </div>
-
-      <div class="row"><button type="button" class="secondary" id="btn-logout">Cerrar sesión</button></div>
+<!-- APP -->
+<div id="screen-app">
+  <div class="topbar">
+    <div class="topbar-brand">⚽ MUNDIAL 2026</div>
+    <div class="topbar-right">
+      <div class="badge-live"><div class="dot-live"></div> En vivo</div>
+      <button class="btn-logout" id="btn-logout">Salir</button>
     </div>
   </div>
 
-  <script>
-    const STORAGE_KEY = 'malaVidaAdmin';
+  <div class="content">
 
-    function loadCfg() {
-      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { return {}; }
-    }
-    function saveCfg(cfg) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(cfg));
-    }
+    <!-- Stats -->
+    <div class="statbar">
+      <div class="stat">
+        <div class="stat-n" id="stat-total">–</div>
+        <div class="stat-l">Tiros</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n" id="stat-wins">–</div>
+        <div class="stat-l">Premios</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n" id="stat-losses">–</div>
+        <div class="stat-l">Atajados</div>
+      </div>
+    </div>
 
-    let cfg = loadCfg();
-    let otpTimer = null;
+    <!-- Generar link -->
+    <div class="card">
+      <div class="card-title"><span class="icon">🔗</span> Generar link personal</div>
+      <div class="phone-row">
+        <div class="prefix-box">+57</div>
+        <input class="phone-input" id="phone-input" type="tel" inputmode="numeric"
+          placeholder="3001234567" maxlength="10" autocomplete="off">
+      </div>
+      <button class="btn-generar" id="btn-generar">
+        <span id="btn-generar-label">Generar y copiar mensaje</span>
+      </button>
+      <div class="result-box" id="result-box">
+        <div class="result-msg" id="result-msg"></div>
+        <button class="btn-wa" id="btn-wa" style="display:none">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Abrir en WhatsApp
+        </button>
+      </div>
+    </div>
 
-    const els = {
-      loginView: document.getElementById('login-view'),
-      appView: document.getElementById('app-view'),
-      apiUrl: document.getElementById('api-url'),
-      adminKey: document.getElementById('admin-key'),
-      loginError: document.getElementById('login-error'),
-      campaignPill: document.getElementById('campaign-pill'),
-      tplFirst: document.getElementById('tpl-first'),
-      tplPrize: document.getElementById('tpl-prize'),
-      invitePhone: document.getElementById('invite-phone'),
-      inviteStatus: document.getElementById('invite-status'),
-      inviteLink: document.getElementById('invite-link'),
-      inviteMessage: document.getElementById('invite-message'),
-      otpList: document.getElementById('otp-list'),
-      shotsList: document.getElementById('shots-list')
-    };
+    <!-- Tabs historial -->
+    <div class="card">
+      <div class="tabs">
+        <button class="tab active" data-tab="tab-shots">Tiros recientes</button>
+        <button class="tab" data-tab="tab-pending">Pendientes OTP</button>
+      </div>
 
-    if (cfg.apiBaseUrl) els.apiUrl.value = cfg.apiBaseUrl;
+      <!-- Tiros -->
+      <div class="tab-pane active" id="tab-shots">
+        <div class="refresh-row">
+          <span style="font-size:.8rem;color:var(--muted)" id="shots-ts">–</span>
+          <button class="btn-refresh" id="btn-refresh-shots">↻ Actualizar</button>
+        </div>
+        <div class="shots-list" id="shots-list">
+          <div class="empty-state">Cargando…</div>
+        </div>
+      </div>
 
-    function apiBase() {
-      return (cfg.apiBaseUrl || '').replace(/\/$/, '');
-    }
+      <!-- Pendientes OTP -->
+      <div class="tab-pane" id="tab-pending">
+        <div class="refresh-row">
+          <span style="font-size:.8rem;color:var(--muted)" id="pending-ts">–</span>
+          <button class="btn-refresh" id="btn-refresh-pending">↻ Actualizar</button>
+        </div>
+        <div class="shots-list" id="pending-list">
+          <div class="empty-state">Cargando…</div>
+        </div>
+      </div>
+    </div>
 
-    async function api(path, options = {}) {
-      const res = await fetch(`${apiBase()}${path}`, {
-        ...options,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${cfg.adminKey}`,
-          ...(options.headers || {})
-        }
+  </div>
+</div>
+
+<script>
+  const API = 'https://mala-vida-api.onrender.com';
+  const STORAGE_KEY = 'mv_admin_secret';
+
+  let secret = '';
+  let waText = '';
+
+  // ── Utilidades ──────────────────────────────────────────────────────
+  function ago(iso) {
+    const diff = Date.now() - new Date(iso).getTime();
+    const m = Math.floor(diff / 60000);
+    if (m < 1) return 'ahora';
+    if (m < 60) return `hace ${m}m`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `hace ${h}h`;
+    return `hace ${Math.floor(h/24)}d`;
+  }
+
+  function ts() {
+    return new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  // ── Login ────────────────────────────────────────────────────────────
+  const savedSecret = sessionStorage.getItem(STORAGE_KEY);
+  if (savedSecret) { secret = savedSecret; showApp(); }
+
+  document.getElementById('secret-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') document.getElementById('btn-login').click();
+  });
+
+  document.getElementById('btn-login').addEventListener('click', async () => {
+    const val = document.getElementById('secret-input').value.trim();
+    if (!val) return;
+    const btn = document.getElementById('btn-login');
+    btn.disabled = true; btn.textContent = 'Verificando…';
+    // Verificamos con una llamada real a la API
+    try {
+      const r = await fetch(`${API}/api/admin/shots`, {
+        headers: { 'X-Admin-Key': val }
       });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(data.message || data.error || 'Error API');
-      return data;
+      if (r.ok || r.status === 404) {
+        secret = val;
+        sessionStorage.setItem(STORAGE_KEY, secret);
+        document.getElementById('login-err').style.display = 'none';
+        showApp();
+      } else {
+        document.getElementById('login-err').style.display = 'block';
+        btn.disabled = false; btn.textContent = 'Entrar';
+      }
+    } catch {
+      document.getElementById('login-err').style.display = 'block';
+      document.getElementById('login-err').textContent = 'No se pudo conectar con la API.';
+      btn.disabled = false; btn.textContent = 'Entrar';
+    }
+  });
+
+  document.getElementById('btn-logout').addEventListener('click', () => {
+    sessionStorage.removeItem(STORAGE_KEY);
+    location.reload();
+  });
+
+  function showApp() {
+    document.getElementById('screen-login').style.display = 'none';
+    document.getElementById('screen-app').style.display = 'flex';
+    loadShots();
+    loadPending();
+  }
+
+  // ── Tabs ─────────────────────────────────────────────────────────────
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ── Generar link ─────────────────────────────────────────────────────
+  document.getElementById('phone-input').addEventListener('input', e => {
+    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
+  });
+
+  document.getElementById('btn-generar').addEventListener('click', async () => {
+    const num = document.getElementById('phone-input').value.trim();
+    if (num.length < 7) return showResult('Ingresa un número válido.', 'err');
+
+    const btn = document.getElementById('btn-generar');
+    const label = document.getElementById('btn-generar-label');
+    btn.disabled = true;
+    label.innerHTML = '<div class="spinner"></div>';
+
+    const phone = '57' + num;
+
+    try {
+      const r = await fetch(`${API}/api/admin/invite/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Admin-Key': secret },
+        body: JSON.stringify({ phone })
+      });
+      const data = await r.json();
+
+      if (r.status === 409) {
+        showResult('⚠️ Este número ya jugó durante el Mundial.', 'warn');
+      } else if (!r.ok) {
+        showResult('Error: ' + (data.message || 'Intenta de nuevo.'), 'err');
+      } else {
+        waText = data.whatsappMessage;
+        showResult(`✅ Link generado para ${data.phoneDisplay}\n\n${data.link}`, 'ok');
+        document.getElementById('btn-wa').style.display = 'flex';
+        document.getElementById('phone-input').value = '';
+        loadShots();
+      }
+    } catch {
+      showResult('No se pudo conectar con la API. Revisa internet.', 'err');
     }
 
-    function showLoginError(msg) {
-      els.loginError.textContent = msg;
-      els.loginError.classList.remove('hidden');
-    }
+    btn.disabled = false;
+    label.textContent = 'Generar y copiar mensaje';
+  });
 
-    async function bootApp() {
-      els.loginView.classList.add('hidden');
-      els.appView.classList.remove('hidden');
-      const campaign = await fetch(`${apiBase()}/api/campaign`).then(r => r.json());
-      els.campaignPill.textContent = campaign.active
-        ? `Campaña activa · ${campaign.start} → ${campaign.end}`
-        : `Campaña INACTIVA · ${campaign.start} → ${campaign.end}`;
+  document.getElementById('btn-wa').addEventListener('click', () => {
+    const encoded = encodeURIComponent(waText);
+    window.open(`https://wa.me/?text=${encoded}`, '_blank');
+  });
 
-      const tpl = await api('/api/admin/templates');
-      els.tplFirst.value = tpl.firstReply;
-      els.tplPrize.value = tpl.prizeExample;
-      await refreshOtp();
-      await refreshShots();
-    }
+  function showResult(msg, type) {
+    const box = document.getElementById('result-box');
+    const msgEl = document.getElementById('result-msg');
+    msgEl.textContent = msg;
+    msgEl.className = 'result-msg' + (type === 'err' ? ' err-msg' : type === 'warn' ? ' warn-msg' : '');
+    box.classList.add('show');
+    if (type !== 'ok') document.getElementById('btn-wa').style.display = 'none';
+  }
 
-    document.getElementById('btn-login').addEventListener('click', async () => {
-      cfg.apiBaseUrl = els.apiUrl.value.trim();
-      cfg.adminKey = els.adminKey.value.trim();
-      if (!cfg.apiBaseUrl || !cfg.adminKey) {
-        showLoginError('Completa URL de API y clave admin.');
+  // ── Cargar tiros ─────────────────────────────────────────────────────
+  async function loadShots() {
+    try {
+      const r = await fetch(`${API}/api/admin/shots`, { headers: { 'X-Admin-Key': secret } });
+      const data = await r.json();
+      const shots = data.shots || [];
+
+      document.getElementById('stat-total').textContent = shots.length;
+      document.getElementById('stat-wins').textContent = shots.filter(s => !s.isLoss).length;
+      document.getElementById('stat-losses').textContent = shots.filter(s => s.isLoss).length;
+      document.getElementById('shots-ts').textContent = 'Actualizado ' + ts();
+
+      const list = document.getElementById('shots-list');
+      if (!shots.length) {
+        list.innerHTML = '<div class="empty-state">Sin tiros aún</div>';
         return;
       }
-      saveCfg(cfg);
-      els.loginError.classList.add('hidden');
-      try {
-        await api('/api/admin/templates');
-        await bootApp();
-      } catch (e) {
-        showLoginError(e.message);
-      }
-    });
-
-    document.getElementById('btn-logout').addEventListener('click', () => {
-      cfg.adminKey = '';
-      saveCfg(cfg);
-      location.reload();
-    });
-
-    document.querySelectorAll('.copy-btn').forEach((btn) => {
-      btn.addEventListener('click', async () => {
-        const target = document.getElementById(btn.dataset.target);
-        try {
-          await navigator.clipboard.writeText(target.value);
-          btn.textContent = '¡Copiado!';
-          setTimeout(() => { btn.textContent = 'Copiar mensaje'; }, 1500);
-        } catch {
-          target.select();
-        }
-      });
-    });
-
-    document.getElementById('btn-invite').addEventListener('click', async () => {
-      els.inviteStatus.className = 'status hidden';
-      try {
-        const data = await api('/api/admin/invite/create', {
-          method: 'POST',
-          body: JSON.stringify({ phone: els.invitePhone.value, countryCode: '57' })
-        });
-        els.inviteLink.value = data.link;
-        els.inviteMessage.value = data.whatsappMessage;
-        els.inviteStatus.textContent = `Link generado para ${data.phoneDisplay}. Expira: ${new Date(data.expiresAt).toLocaleString('es-CO')}`;
-        els.inviteStatus.className = 'status ok';
-      } catch (e) {
-        els.inviteStatus.textContent = e.message;
-        els.inviteStatus.className = 'status err';
-      }
-    });
-
-    async function refreshOtp() {
-      try {
-        const data = await api('/api/admin/otp-pending');
-        if (!data.pending.length) {
-          els.otpList.innerHTML = '<p class="sub">No hay códigos pendientes.</p>';
-          return;
-        }
-        els.otpList.innerHTML = data.pending.map((o) => `
-          <div class="otp-item">
-            <div><strong>${o.phoneDisplay}</strong> · código <strong>${o.code}</strong></div>
-            <div class="otp-meta">Expira: ${new Date(o.expiresAt).toLocaleString('es-CO')}</div>
-            <div class="row" style="margin-top:8px">
-              <button type="button" class="copy-otp" data-msg="${encodeURIComponent(o.whatsappMessage)}">Copiar mensaje OTP</button>
-            </div>
+      list.innerHTML = shots.slice(0, 20).map(s => `
+        <div class="shot-item">
+          <div class="shot-icon">${s.isLoss ? '🧤' : '⚽'}</div>
+          <div class="shot-info">
+            <div class="shot-phone">${s.phoneDisplay}</div>
+            <div class="shot-prize">${s.prizeName}</div>
+            ${s.code ? `<div class="shot-code">${s.code}</div>` : ''}
           </div>
-        `).join('');
-        els.otpList.querySelectorAll('.copy-otp').forEach((btn) => {
-          btn.addEventListener('click', async () => {
-            const msg = decodeURIComponent(btn.dataset.msg);
-            await navigator.clipboard.writeText(msg);
-            btn.textContent = '¡Copiado!';
-          });
-        });
-      } catch (e) {
-        els.otpList.innerHTML = `<p class="status err">${e.message}</p>`;
-      }
+          <div class="shot-time">${ago(s.createdAt)}</div>
+        </div>
+      `).join('');
+    } catch {
+      document.getElementById('shots-list').innerHTML = '<div class="empty-state">Error cargando tiros</div>';
     }
+  }
 
-    async function refreshShots() {
-      try {
-        const data = await api('/api/admin/shots');
-        if (!data.shots.length) {
-          els.shotsList.innerHTML = '<p class="sub">Aún no hay jugadas.</p>';
-          return;
-        }
-        els.shotsList.innerHTML = `<p class="sub">Total: ${data.total}</p>` + data.shots.map((s) => `
-          <div class="shot-item">
-            ${s.phoneDisplay} · ${s.isLoss ? 'Sin premio' : s.prizeName}${s.code ? ` · <code>${s.code}</code>` : ''}
-            <div class="otp-meta">${new Date(s.createdAt).toLocaleString('es-CO')}</div>
-          </div>
-        `).join('');
-      } catch (e) {
-        els.shotsList.innerHTML = `<p class="status err">${e.message}</p>`;
-      }
-    }
+  // ── Cargar pendientes OTP ─────────────────────────────────────────────
+  async function loadPending() {
+    try {
+      const r = await fetch(`${API}/api/admin/otp-pending`, { headers: { 'X-Admin-Key': secret } });
+      const data = await r.json();
+      const pending = data.pending || [];
+      document.getElementById('pending-ts').textContent = 'Actualizado ' + ts();
 
-    document.getElementById('btn-refresh-otp').addEventListener('click', refreshOtp);
-    document.getElementById('btn-refresh-shots').addEventListener('click', refreshShots);
-    document.getElementById('btn-auto-otp').addEventListener('click', (e) => {
-      if (otpTimer) {
-        clearInterval(otpTimer);
-        otpTimer = null;
-        e.target.textContent = 'Auto 15s';
+      const list = document.getElementById('pending-list');
+      if (!pending.length) {
+        list.innerHTML = '<div class="empty-state">Sin códigos pendientes</div>';
         return;
       }
-      e.target.textContent = 'Detener auto';
-      otpTimer = setInterval(refreshOtp, 15000);
-    });
-
-    if (cfg.apiBaseUrl && cfg.adminKey) {
-      bootApp().catch(() => {});
+      list.innerHTML = pending.map(p => `
+        <div class="shot-item">
+          <div class="shot-icon">📲</div>
+          <div class="shot-info">
+            <div class="shot-phone">${p.phoneDisplay}</div>
+            <div class="shot-prize">Código: <strong style="color:var(--accent)">${p.code}</strong></div>
+          </div>
+          <div>
+            <button onclick="sendOtp('${p.phoneDisplay}','${p.code}')" style="background:var(--accent);color:#0d0120;border:none;border-radius:999px;padding:8px 14px;font:700 .78rem 'DM Sans',sans-serif;cursor:pointer;">
+              WhatsApp
+            </button>
+          </div>
+        </div>
+      `).join('');
+    } catch {
+      document.getElementById('pending-list').innerHTML = '<div class="empty-state">Error cargando pendientes</div>';
     }
-  </script>
+  }
+
+  function sendOtp(phoneDisplay, code) {
+    const msg = `⚽ *Mala Vida — Código penalti Mundial 2026*\n\nTu código para jugar es: *${code}*\n\nIngrésalo en la pantalla del juego. Válido 15 minutos.\nUn solo penalti por número durante el Mundial. ¡Mucha suerte! 🥅`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+  }
+
+  // ── Refresh buttons ───────────────────────────────────────────────────
+  document.getElementById('btn-refresh-shots').addEventListener('click', loadShots);
+  document.getElementById('btn-refresh-pending').addEventListener('click', loadPending);
+</script>
 </body>
 </html>
