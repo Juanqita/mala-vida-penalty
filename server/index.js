@@ -25,7 +25,8 @@ function freshDb() {
     shots: [],
     invites: [],
     otp_requests: [],
-    sessions: []
+    sessions: [],
+    claims: []
   };
 }
 
@@ -300,6 +301,82 @@ const server = createServer(async (req, res) => {
       DB = freshDb();
       console.log(`[RESET] DB reiniciada. Borrados ${before} tiros.`);
       sendJson(res, 200, { ok: true, message: `Base de datos reiniciada. ${before} tiros borrados.` }, origin);
+      return;
+    }
+
+
+    // ── GET /api/admin/lookup-phone ────────────────────────────────────
+    // Verifica si un número ya jugó. Query param: ?phone=573001234567
+    if (req.method === 'GET' && url.pathname === '/api/admin/lookup-phone') {
+      if (!requireAdmin(req, res, origin)) return;
+      const rawPhone = url.searchParams.get('phone') || '';
+      const phone = normalizePhone(rawPhone);
+      if (!phone) {
+        sendJson(res, 400, { error: 'invalid_phone', message: 'Número inválido.' }, origin);
+        return;
+      }
+      const row = findShot(phone);
+      if (!row) {
+        sendJson(res, 200, { found: false, phone, phoneDisplay: formatPhoneDisplay(phone), message: 'Este número NO ha jugado aún.' }, origin);
+        return;
+      }
+      const claimed = DB.claims.find(c => c.phone === phone);
+      sendJson(res, 200, {
+        found: true, phone, phoneDisplay: formatPhoneDisplay(phone),
+        isLoss: !!row.is_loss, prizeName: row.prize_name,
+        code: row.code, playedAt: row.created_at,
+        claimed: !!claimed, claimedAt: claimed ? claimed.claimed_at : null
+      }, origin);
+      return;
+    }
+
+    // ── GET /api/admin/lookup-code ─────────────────────────────────────
+    // Verifica si un código de premio existe y si ya fue reclamado
+    if (req.method === 'GET' && url.pathname === '/api/admin/lookup-code') {
+      if (!requireAdmin(req, res, origin)) return;
+      const code = (url.searchParams.get('code') || '').trim().toUpperCase();
+      if (!code) {
+        sendJson(res, 400, { error: 'invalid_code', message: 'Código requerido.' }, origin);
+        return;
+      }
+      const row = DB.shots.find(s => s.code && s.code.toUpperCase() === code);
+      if (!row) {
+        sendJson(res, 200, { found: false, code, message: 'Código no encontrado.' }, origin);
+        return;
+      }
+      const claimed = DB.claims.find(c => c.code === code);
+      sendJson(res, 200, {
+        found: true, code,
+        phone: row.phone, phoneDisplay: formatPhoneDisplay(row.phone),
+        prizeName: row.prize_name, playedAt: row.created_at,
+        claimed: !!claimed, claimedAt: claimed ? claimed.claimed_at : null
+      }, origin);
+      return;
+    }
+
+    // ── POST /api/admin/claim ──────────────────────────────────────────
+    // Marca un código de premio como reclamado
+    if (req.method === 'POST' && url.pathname === '/api/admin/claim') {
+      if (!requireAdmin(req, res, origin)) return;
+      const body2 = await readBody(req);
+      const code = (body2.code || '').trim().toUpperCase();
+      if (!code) {
+        sendJson(res, 400, { error: 'invalid_code', message: 'Código requerido.' }, origin);
+        return;
+      }
+      const row = DB.shots.find(s => s.code && s.code.toUpperCase() === code);
+      if (!row) {
+        sendJson(res, 404, { error: 'not_found', message: 'Código no encontrado.' }, origin);
+        return;
+      }
+      const already = DB.claims.find(c => c.code === code);
+      if (already) {
+        sendJson(res, 409, { error: 'already_claimed', message: 'Este premio ya fue reclamado.', claimedAt: already.claimed_at }, origin);
+        return;
+      }
+      DB.claims.push({ code, phone: row.phone, prizeName: row.prize_name, claimed_at: new Date().toISOString() });
+      console.log(`[CLAIM] ${code} reclamado por ${row.phone}`);
+      sendJson(res, 200, { ok: true, message: 'Premio marcado como reclamado.', code, prizeName: row.prize_name }, origin);
       return;
     }
 
