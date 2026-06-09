@@ -296,6 +296,19 @@
       </div>
     </div>
 
+
+    <!-- Reset -->
+    <div class="card" style="border-color:rgba(248,113,113,.25)">
+      <div class="card-title" style="color:var(--err)"><span class="icon">🗑️</span> Zona de peligro</div>
+      <p style="font-size:.83rem;color:var(--muted);margin-bottom:14px;line-height:1.5">
+        Borra <strong style="color:var(--text)">todos los tiros registrados</strong> para dejar el contador en cero antes de lanzar la promo al público.
+      </p>
+      <button id="btn-reset" style="width:100%;padding:14px;border-radius:999px;border:1.5px solid var(--err);background:transparent;color:var(--err);font:700 .95rem 'DM Sans',sans-serif;cursor:pointer;">
+        Resetear todos los datos
+      </button>
+      <div id="reset-msg" style="margin-top:10px;font-size:.83rem;display:none"></div>
+    </div>
+
   </div>
 </div>
 
@@ -507,6 +520,38 @@
   // ── Refresh buttons ───────────────────────────────────────────────────
   document.getElementById('btn-refresh-shots').addEventListener('click', loadShots);
   document.getElementById('btn-refresh-pending').addEventListener('click', loadPending);
+
+  // ── Reset ─────────────────────────────────────────────────────────────
+  document.getElementById('btn-reset').addEventListener('click', async () => {
+    if (!confirm('¿Seguro? Esto borra TODOS los tiros registrados. No se puede deshacer.')) return;
+    const btn = document.getElementById('btn-reset');
+    const msg = document.getElementById('reset-msg');
+    btn.disabled = true;
+    btn.textContent = 'Reseteando…';
+    try {
+      const r = await fetch(`${API}/api/admin/reset`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Admin-Key': secret }
+      });
+      const data = await r.json();
+      if (r.ok) {
+        msg.style.display = 'block';
+        msg.style.color = 'var(--ok)';
+        msg.textContent = '✅ ' + data.message;
+        loadShots();
+      } else {
+        msg.style.display = 'block';
+        msg.style.color = 'var(--err)';
+        msg.textContent = '❌ Error: ' + (data.message || 'Intenta de nuevo.');
+      }
+    } catch {
+      msg.style.display = 'block';
+      msg.style.color = 'var(--err)';
+      msg.textContent = '❌ No se pudo conectar con la API.';
+    }
+    btn.disabled = false;
+    btn.textContent = 'Resetear todos los datos';
+  });
 </script>
 </body>
 </html>
