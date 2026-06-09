@@ -7,214 +7,95 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0d0120;
-      --card: #1a0338;
-      --accent: #F5C518;
-      --accent2: #ff6b35;
-      --purple: #7c3aed;
-      --text: #fff;
-      --muted: rgba(255,255,255,.5);
-      --border: rgba(245,197,24,.2);
-      --ok: #4ade80;
-      --err: #f87171;
-      --radius: 18px;
+      --bg: #0d0120; --card: #180330; --accent: #F5C518;
+      --text: #fff; --muted: rgba(255,255,255,.5);
+      --border: rgba(245,197,24,.2); --ok: #4ade80; --err: #f87171;
+      --warn: #fb923c; --radius: 18px;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100dvh;
-      display: flex;
-      flex-direction: column;
-    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100dvh; display: flex; flex-direction: column; }
 
-    /* ── LOGIN ─────────────────────────────── */
-    #screen-login {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 32px 24px;
-      gap: 20px;
-    }
-    .login-logo { font-family: 'Syne', sans-serif; font-size: 1.1rem; letter-spacing: .15em; color: var(--accent); text-transform: uppercase; }
-    .login-title { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; text-align: center; line-height: 1.1; }
-    .login-title span { color: var(--accent); }
-    .login-box { width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 12px; }
-    .login-box input {
-      width: 100%; padding: 16px 18px;
-      border-radius: 14px; border: 1.5px solid var(--border);
-      background: var(--card); color: var(--text);
-      font: 600 1rem 'DM Sans', sans-serif;
-      outline: none; letter-spacing: .08em;
-    }
-    .login-box input:focus { border-color: var(--accent); }
-    .btn-primary {
-      width: 100%; padding: 17px;
-      border-radius: 999px; border: none;
-      background: var(--accent); color: #0d0120;
-      font: 700 1.05rem 'DM Sans', sans-serif;
-      cursor: pointer; transition: opacity .15s, transform .1s;
-      letter-spacing: .02em;
-    }
-    .btn-primary:active { opacity: .85; transform: scale(.98); }
-    .btn-primary:disabled { opacity: .45; cursor: not-allowed; }
+    /* LOGIN */
+    #screen-login { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px 24px; gap:18px; }
+    .login-brand { font-family:'Syne',sans-serif; font-size:.95rem; letter-spacing:.15em; color:var(--accent); }
+    .login-title { font-family:'Syne',sans-serif; font-size:2rem; font-weight:800; text-align:center; line-height:1.1; }
+    .login-title span { color:var(--accent); }
+    .login-form { width:100%; max-width:360px; display:flex; flex-direction:column; gap:10px; }
+    .login-form input { width:100%; padding:16px 18px; border-radius:14px; border:1.5px solid var(--border); background:var(--card); color:var(--text); font:600 1rem 'DM Sans',sans-serif; outline:none; }
+    .login-form input:focus { border-color:var(--accent); }
 
-    /* ── MAIN APP ──────────────────────────── */
-    #screen-app { flex: 1; display: none; flex-direction: column; }
+    /* SHARED */
+    .btn { padding:15px 20px; border-radius:999px; border:none; font:700 .95rem 'DM Sans',sans-serif; cursor:pointer; transition:opacity .15s, transform .1s; }
+    .btn:active { opacity:.85; transform:scale(.98); }
+    .btn:disabled { opacity:.4; cursor:not-allowed; }
+    .btn-primary { background:var(--accent); color:#0d0120; width:100%; }
+    .btn-ghost { background:none; border:1px solid rgba(255,255,255,.15); color:var(--muted); font:500 .78rem 'DM Sans',sans-serif; padding:6px 14px; border-radius:999px; cursor:pointer; }
+    .btn-danger { background:none; border:1.5px solid var(--err); color:var(--err); width:100%; }
+    .err-text { color:var(--err); font-size:.83rem; text-align:center; }
 
-    /* Header */
-    .topbar {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 16px 20px;
-      border-bottom: 1px solid rgba(255,255,255,.07);
-      position: sticky; top: 0; z-index: 10;
-      background: rgba(13,1,32,.95); backdrop-filter: blur(12px);
-    }
-    .topbar-brand { font-family: 'Syne', sans-serif; font-size: .95rem; color: var(--accent); letter-spacing: .12em; }
-    .topbar-right { display: flex; align-items: center; gap: 10px; }
-    .badge-live { display: flex; align-items: center; gap: 5px; font-size: .72rem; font-weight: 600; color: var(--ok); }
-    .dot-live { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); animation: pulse 2s infinite; }
-    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:.4} }
-    .btn-logout { background: none; border: 1px solid rgba(255,255,255,.15); color: var(--muted); font: 500 .78rem 'DM Sans',sans-serif; padding: 6px 12px; border-radius: 999px; cursor: pointer; }
+    /* APP */
+    #screen-app { flex:1; display:none; flex-direction:column; }
+    .topbar { display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid rgba(255,255,255,.07); position:sticky; top:0; z-index:10; background:rgba(13,1,32,.95); backdrop-filter:blur(12px); }
+    .topbar-brand { font-family:'Syne',sans-serif; font-size:.9rem; color:var(--accent); letter-spacing:.12em; }
 
-    /* Content */
-    .content { padding: 20px; display: flex; flex-direction: column; gap: 16px; max-width: 520px; margin: 0 auto; width: 100%; }
+    .content { padding:18px; display:flex; flex-direction:column; gap:14px; max-width:480px; margin:0 auto; width:100%; padding-bottom:40px; }
 
-    /* Stat bar */
-    .statbar {
-      display: grid; grid-template-columns: 1fr 1fr 1fr;
-      gap: 10px;
-    }
-    .stat {
-      background: var(--card); border-radius: 14px;
-      border: 1px solid var(--border);
-      padding: 14px 12px; text-align: center;
-    }
-    .stat-n { font-family: 'Syne',sans-serif; font-size: 1.7rem; font-weight: 800; color: var(--accent); line-height: 1; }
-    .stat-l { font-size: .68rem; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: .07em; }
+    /* TABS */
+    .tabs { display:flex; border-radius:12px; overflow:hidden; border:1px solid var(--border); }
+    .tab { flex:1; padding:12px 8px; text-align:center; font:600 .85rem 'DM Sans',sans-serif; cursor:pointer; background:transparent; border:none; color:var(--muted); transition:background .15s, color .15s; }
+    .tab.active { background:var(--accent); color:#0d0120; }
+    .tab-pane { display:none; }
+    .tab-pane.active { display:flex; flex-direction:column; gap:14px; padding-top:14px; }
 
-    /* Card */
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px;
-    }
-    .card-title {
-      font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
-      margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
-    }
-    .card-title .icon { font-size: 1.1rem; }
+    /* CARD */
+    .card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:18px; }
+    .card-title { font-family:'Syne',sans-serif; font-size:.95rem; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
 
-    /* Input de teléfono */
-    .phone-row { display: flex; gap: 8px; }
-    .prefix-box {
-      padding: 14px 12px; border-radius: 12px;
-      background: rgba(255,255,255,.07); border: 1.5px solid var(--border);
-      color: var(--muted); font: 600 1rem 'DM Sans',sans-serif;
-      white-space: nowrap; min-width: 56px; text-align: center;
-    }
-    .phone-input {
-      flex: 1; padding: 14px 16px;
-      border-radius: 12px; border: 1.5px solid var(--border);
-      background: rgba(255,255,255,.05); color: var(--text);
-      font: 500 1.05rem 'DM Sans',sans-serif;
-      outline: none; -webkit-appearance: none;
-    }
-    .phone-input:focus { border-color: var(--accent); background: rgba(255,255,255,.08); }
-    .phone-input::placeholder { color: var(--muted); }
-    .btn-generar {
-      width: 100%; margin-top: 12px; padding: 16px;
-      border-radius: 999px; border: none;
-      background: var(--accent); color: #0d0120;
-      font: 700 1rem 'DM Sans',sans-serif;
-      cursor: pointer; transition: opacity .15s, transform .1s;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-    }
-    .btn-generar:active { opacity: .85; transform: scale(.98); }
-    .btn-generar:disabled { opacity: .45; cursor: not-allowed; }
+    /* INPUT ROW */
+    .input-row { display:flex; gap:8px; }
+    .prefix { padding:14px 12px; border-radius:12px; background:rgba(255,255,255,.07); border:1.5px solid var(--border); color:var(--muted); font:600 1rem 'DM Sans',sans-serif; white-space:nowrap; text-align:center; }
+    .field { flex:1; padding:14px 16px; border-radius:12px; border:1.5px solid var(--border); background:rgba(255,255,255,.05); color:var(--text); font:500 1rem 'DM Sans',sans-serif; outline:none; -webkit-appearance:none; }
+    .field:focus { border-color:var(--accent); }
+    .field::placeholder { color:var(--muted); }
 
-    /* Resultado del link */
-    .result-box {
-      margin-top: 14px; display: none;
-      flex-direction: column; gap: 10px;
-    }
-    .result-box.show { display: flex; }
-    .result-msg {
-      background: rgba(74,222,128,.08);
-      border: 1px solid rgba(74,222,128,.25);
-      border-radius: 12px; padding: 14px;
-      font-size: .88rem; line-height: 1.5;
-      color: rgba(255,255,255,.9);
-      word-break: break-all;
-    }
-    .result-msg.err-msg {
-      background: rgba(248,113,113,.08);
-      border-color: rgba(248,113,113,.25);
-      color: var(--err);
-    }
-    .result-msg.warn-msg {
-      background: rgba(251,191,36,.08);
-      border-color: rgba(251,191,36,.25);
-      color: #fbbf24;
-    }
-    .btn-wa {
-      width: 100%; padding: 16px;
-      border-radius: 999px; border: none;
-      background: #25D366; color: #fff;
-      font: 700 1rem 'DM Sans',sans-serif;
-      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
-      transition: opacity .15s;
-    }
-    .btn-wa:active { opacity: .85; }
+    /* RESULT */
+    .result { border-radius:14px; padding:16px; display:none; }
+    .result.show { display:block; }
+    .result-icon { font-size:2rem; margin-bottom:8px; }
+    .result-title { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; margin-bottom:6px; }
+    .result-row { display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px solid rgba(255,255,255,.07); font-size:.85rem; }
+    .result-row:last-child { border-bottom:none; }
+    .result-label { color:var(--muted); }
+    .result-val { font-weight:600; }
+    .result.win { background:rgba(74,222,128,.08); border:1px solid rgba(74,222,128,.25); }
+    .result.loss { background:rgba(100,100,120,.1); border:1px solid rgba(255,255,255,.1); }
+    .result.not-found { background:rgba(251,146,60,.08); border:1px solid rgba(251,146,60,.25); }
+    .result.error { background:rgba(248,113,113,.08); border:1px solid rgba(248,113,113,.25); }
+    .result.claimed { background:rgba(248,113,113,.08); border:1px solid rgba(248,113,113,.25); }
 
-    /* Lista de tiros */
-    .shots-list { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
-    .shot-item {
-      border-radius: 12px; padding: 12px 14px;
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(255,255,255,.07);
-      display: flex; align-items: center; gap: 12px;
-    }
-    .shot-icon { font-size: 1.4rem; flex-shrink: 0; }
-    .shot-info { flex: 1; min-width: 0; }
-    .shot-phone { font-size: .88rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .shot-prize { font-size: .75rem; color: var(--muted); margin-top: 2px; }
-    .shot-code { font-size: .7rem; color: var(--accent); margin-top: 2px; font-weight: 600; letter-spacing: .05em; }
-    .shot-time { font-size: .7rem; color: var(--muted); flex-shrink: 0; text-align: right; }
+    .btn-wa { width:100%; padding:14px; border-radius:999px; border:none; background:#25D366; color:#fff; font:700 .95rem 'DM Sans',sans-serif; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; margin-top:10px; }
 
-    .empty-state { text-align: center; padding: 28px 0; color: var(--muted); font-size: .9rem; }
+    /* INVITE */
+    .invite-result { margin-top:10px; display:none; flex-direction:column; gap:8px; }
+    .invite-result.show { display:flex; }
+    .link-box { background:rgba(0,0,0,.3); border-radius:10px; padding:10px 14px; font-size:.78rem; color:var(--muted); word-break:break-all; border:1px solid rgba(255,255,255,.08); }
 
-    /* Spinner */
-    .spinner { width: 18px; height: 18px; border: 2.5px solid rgba(13,1,32,.3); border-top-color: #0d0120; border-radius: 50%; animation: spin .6s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* Tabs */
-    .tabs { display: flex; gap: 0; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); margin-bottom: 4px; }
-    .tab { flex: 1; padding: 11px 8px; text-align: center; font: 600 .82rem 'DM Sans',sans-serif; cursor: pointer; background: transparent; border: none; color: var(--muted); transition: background .15s, color .15s; }
-    .tab.active { background: var(--accent); color: #0d0120; }
-
-    .tab-pane { display: none; }
-    .tab-pane.active { display: block; }
-
-    /* Refresh */
-    .refresh-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-    .btn-refresh { background: none; border: 1px solid var(--border); color: var(--accent); font: 600 .8rem 'DM Sans',sans-serif; padding: 7px 14px; border-radius: 999px; cursor: pointer; }
+    /* SPINNER */
+    .spin { width:16px; height:16px; border:2.5px solid rgba(13,1,32,.3); border-top-color:#0d0120; border-radius:50%; animation:spin .6s linear infinite; display:inline-block; }
+    @keyframes spin { to{transform:rotate(360deg)} }
+    .spin-w { border:2.5px solid rgba(255,255,255,.2); border-top-color:#fff; }
   </style>
 </head>
 <body>
 
 <!-- LOGIN -->
 <div id="screen-login">
-  <div class="login-logo">Mala Vida Fast Food</div>
-  <div class="login-title">Panel<br><span>Operador</span></div>
-  <div class="login-box">
-    <input id="secret-input" type="password" placeholder="Contraseña" autocomplete="current-password">
-    <button class="btn-primary" id="btn-login">Entrar</button>
-    <div id="login-err" style="color:var(--err);font-size:.85rem;text-align:center;display:none;">Contraseña incorrecta</div>
+  <div class="login-brand">MALA VIDA FAST FOOD</div>
+  <div class="login-title">Panel<br><span>Operador ⚽</span></div>
+  <div class="login-form">
+    <input id="pwd" type="password" placeholder="Contraseña" autocomplete="current-password">
+    <button class="btn btn-primary" id="btn-login">Entrar</button>
+    <div id="login-err" class="err-text" style="display:none">Contraseña incorrecta</div>
   </div>
 </div>
 
@@ -222,336 +103,323 @@
 <div id="screen-app">
   <div class="topbar">
     <div class="topbar-brand">⚽ MUNDIAL 2026</div>
-    <div class="topbar-right">
-      <div class="badge-live"><div class="dot-live"></div> En vivo</div>
-      <button class="btn-logout" id="btn-logout">Salir</button>
-    </div>
+    <button class="btn-ghost" id="btn-logout">Salir</button>
   </div>
 
   <div class="content">
-
-    <!-- Stats -->
-    <div class="statbar">
-      <div class="stat">
-        <div class="stat-n" id="stat-total">–</div>
-        <div class="stat-l">Tiros</div>
-      </div>
-      <div class="stat">
-        <div class="stat-n" id="stat-wins">–</div>
-        <div class="stat-l">Premios</div>
-      </div>
-      <div class="stat">
-        <div class="stat-n" id="stat-losses">–</div>
-        <div class="stat-l">Atajados</div>
-      </div>
+    <div class="tabs">
+      <button class="tab active" data-tab="tab-verify">Verificar premio</button>
+      <button class="tab" data-tab="tab-invite">Enviar link</button>
+      <button class="tab" data-tab="tab-danger">Ajustes</button>
     </div>
 
-    <!-- Generar link -->
-    <div class="card">
-      <div class="card-title"><span class="icon">🔗</span> Generar link personal</div>
-      <div class="phone-row">
-        <div class="prefix-box">+57</div>
-        <input class="phone-input" id="phone-input" type="tel" inputmode="numeric"
-          placeholder="3001234567" maxlength="10" autocomplete="off">
+    <!-- ── TAB: VERIFICAR ────────────────────────────────────────── -->
+    <div class="tab-pane active" id="tab-verify">
+
+      <!-- Buscar por número -->
+      <div class="card">
+        <div class="card-title">📱 ¿Ya jugó este número?</div>
+        <div class="input-row">
+          <div class="prefix">+57</div>
+          <input class="field" id="lookup-phone" type="tel" inputmode="numeric" placeholder="3001234567" maxlength="10">
+        </div>
+        <button class="btn btn-primary" id="btn-lookup-phone" style="margin-top:10px">Consultar</button>
+        <div class="result" id="result-phone"></div>
       </div>
-      <button class="btn-generar" id="btn-generar">
-        <span id="btn-generar-label">Generar y copiar mensaje</span>
-      </button>
-      <div class="result-box" id="result-box">
-        <div class="result-msg" id="result-msg"></div>
-        <button class="btn-wa" id="btn-wa" style="display:none">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          Abrir en WhatsApp
+
+      <!-- Buscar por código -->
+      <div class="card">
+        <div class="card-title">🎟️ Verificar código de premio</div>
+        <input class="field" id="lookup-code" type="text" placeholder="MALA-MUN-XXXXXX" autocomplete="off" style="text-transform:uppercase">
+        <button class="btn btn-primary" id="btn-lookup-code" style="margin-top:10px">Verificar código</button>
+        <div class="result" id="result-code"></div>
+        <button class="btn btn-primary" id="btn-claim" style="margin-top:10px;display:none;background:#4ade80;color:#0d0120">
+          ✅ Marcar como entregado
+        </button>
+      </div>
+
+    </div>
+
+    <!-- ── TAB: ENVIAR LINK ──────────────────────────────────────── -->
+    <div class="tab-pane" id="tab-invite">
+      <div class="card">
+        <div class="card-title">🔗 Generar link personal</div>
+        <p style="font-size:.82rem;color:var(--muted);margin-bottom:12px;line-height:1.5">El cliente te escribe → ingresas su número → se abre WhatsApp con el mensaje listo.</p>
+        <div class="input-row">
+          <div class="prefix">+57</div>
+          <input class="field" id="invite-phone" type="tel" inputmode="numeric" placeholder="3001234567" maxlength="10">
+        </div>
+        <button class="btn btn-primary" id="btn-invite" style="margin-top:10px">Generar link</button>
+        <div class="invite-result" id="invite-result">
+          <div class="link-box" id="invite-link-box"></div>
+          <button class="btn-wa" id="btn-wa">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Abrir en WhatsApp
+          </button>
+          <div id="invite-err" style="color:var(--err);font-size:.83rem;display:none"></div>
+        </div>
+      </div>
+
+      <!-- Mensaje primera respuesta -->
+      <div class="card">
+        <div class="card-title">💬 Respuesta inicial</div>
+        <p style="font-size:.82rem;color:var(--muted);margin-bottom:12px;line-height:1.5">Cuando un cliente escribe por primera vez pidiendo jugar, manda este mensaje:</p>
+        <button class="btn-wa" id="btn-first-reply">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Enviar saludo inicial
         </button>
       </div>
     </div>
 
-    <!-- Tabs historial -->
-    <div class="card">
-      <div class="tabs">
-        <button class="tab active" data-tab="tab-shots">Tiros recientes</button>
-        <button class="tab" data-tab="tab-pending">Pendientes OTP</button>
+    <!-- ── TAB: AJUSTES ──────────────────────────────────────────── -->
+    <div class="tab-pane" id="tab-danger">
+      <div class="card" style="border-color:rgba(248,113,113,.25)">
+        <div class="card-title" style="color:var(--err)">🗑️ Resetear datos de prueba</div>
+        <p style="font-size:.83rem;color:var(--muted);margin-bottom:14px;line-height:1.5">
+          Borra todos los tiros registrados. Úsalo <strong style="color:var(--text)">antes de lanzar al público</strong> para empezar desde cero.
+        </p>
+        <button class="btn btn-danger" id="btn-reset">Resetear todos los datos</button>
+        <div id="reset-msg" style="margin-top:10px;font-size:.83rem;display:none"></div>
       </div>
-
-      <!-- Tiros -->
-      <div class="tab-pane active" id="tab-shots">
-        <div class="refresh-row">
-          <span style="font-size:.8rem;color:var(--muted)" id="shots-ts">–</span>
-          <button class="btn-refresh" id="btn-refresh-shots">↻ Actualizar</button>
-        </div>
-        <div class="shots-list" id="shots-list">
-          <div class="empty-state">Cargando…</div>
-        </div>
-      </div>
-
-      <!-- Pendientes OTP -->
-      <div class="tab-pane" id="tab-pending">
-        <div class="refresh-row">
-          <span style="font-size:.8rem;color:var(--muted)" id="pending-ts">–</span>
-          <button class="btn-refresh" id="btn-refresh-pending">↻ Actualizar</button>
-        </div>
-        <div class="shots-list" id="pending-list">
-          <div class="empty-state">Cargando…</div>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- Reset -->
-    <div class="card" style="border-color:rgba(248,113,113,.25)">
-      <div class="card-title" style="color:var(--err)"><span class="icon">🗑️</span> Zona de peligro</div>
-      <p style="font-size:.83rem;color:var(--muted);margin-bottom:14px;line-height:1.5">
-        Borra <strong style="color:var(--text)">todos los tiros registrados</strong> para dejar el contador en cero antes de lanzar la promo al público.
-      </p>
-      <button id="btn-reset" style="width:100%;padding:14px;border-radius:999px;border:1.5px solid var(--err);background:transparent;color:var(--err);font:700 .95rem 'DM Sans',sans-serif;cursor:pointer;">
-        Resetear todos los datos
-      </button>
-      <div id="reset-msg" style="margin-top:10px;font-size:.83rem;display:none"></div>
     </div>
 
   </div>
 </div>
 
 <script>
-  const API = 'https://mala-vida-api.onrender.com';
-  const STORAGE_KEY = 'mv_admin_secret';
+const API = 'https://mala-vida-api.onrender.com';
+const SK  = 'mv_admin_s';
+let secret = '', waText = '', currentCode = '';
 
-  let secret = '';
-  let waText = '';
+// ── Login ──────────────────────────────────────────────────────────────────
+const saved = sessionStorage.getItem(SK);
+if (saved) { secret = saved; showApp(); }
 
-  // ── Utilidades ──────────────────────────────────────────────────────
-  function ago(iso) {
-    const diff = Date.now() - new Date(iso).getTime();
-    const m = Math.floor(diff / 60000);
-    if (m < 1) return 'ahora';
-    if (m < 60) return `hace ${m}m`;
-    const h = Math.floor(m / 60);
-    if (h < 24) return `hace ${h}h`;
-    return `hace ${Math.floor(h/24)}d`;
-  }
+document.getElementById('pwd').addEventListener('keydown', e => e.key === 'Enter' && document.getElementById('btn-login').click());
 
-  function ts() {
-    return new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
-  }
-
-  // ── Login ────────────────────────────────────────────────────────────
-  const savedSecret = sessionStorage.getItem(STORAGE_KEY);
-  if (savedSecret) { secret = savedSecret; showApp(); }
-
-  document.getElementById('secret-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') document.getElementById('btn-login').click();
-  });
-
-  document.getElementById('btn-login').addEventListener('click', async () => {
-    const val = document.getElementById('secret-input').value.trim();
-    if (!val) return;
-    const btn = document.getElementById('btn-login');
-    btn.disabled = true; btn.textContent = 'Verificando…';
-    // Verificamos con una llamada real a la API
-    try {
-      const r = await fetch(`${API}/api/admin/shots`, {
-        headers: { 'X-Admin-Key': val }
-      });
-      if (r.ok || r.status === 404) {
-        secret = val;
-        sessionStorage.setItem(STORAGE_KEY, secret);
-        document.getElementById('login-err').style.display = 'none';
-        showApp();
-      } else {
-        document.getElementById('login-err').style.display = 'block';
-        btn.disabled = false; btn.textContent = 'Entrar';
-      }
-    } catch {
+document.getElementById('btn-login').addEventListener('click', async () => {
+  const val = document.getElementById('pwd').value.trim();
+  if (!val) return;
+  const btn = document.getElementById('btn-login');
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span>';
+  try {
+    const r = await fetch(`${API}/api/admin/shots`, { headers: { 'X-Admin-Key': val } });
+    if (r.ok || r.status === 404) {
+      secret = val; sessionStorage.setItem(SK, secret);
+      document.getElementById('login-err').style.display = 'none';
+      showApp();
+    } else {
       document.getElementById('login-err').style.display = 'block';
-      document.getElementById('login-err').textContent = 'No se pudo conectar con la API.';
-      btn.disabled = false; btn.textContent = 'Entrar';
     }
-  });
-
-  document.getElementById('btn-logout').addEventListener('click', () => {
-    sessionStorage.removeItem(STORAGE_KEY);
-    location.reload();
-  });
-
-  function showApp() {
-    document.getElementById('screen-login').style.display = 'none';
-    document.getElementById('screen-app').style.display = 'flex';
-    loadShots();
-    loadPending();
+  } catch {
+    document.getElementById('login-err').textContent = 'No se pudo conectar con la API.';
+    document.getElementById('login-err').style.display = 'block';
   }
+  btn.disabled = false; btn.textContent = 'Entrar';
+});
 
-  // ── Tabs ─────────────────────────────────────────────────────────────
-  document.querySelectorAll('.tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-      tab.classList.add('active');
-      document.getElementById(tab.dataset.tab).classList.add('active');
+document.getElementById('btn-logout').addEventListener('click', () => { sessionStorage.removeItem(SK); location.reload(); });
+
+function showApp() {
+  document.getElementById('screen-login').style.display = 'none';
+  document.getElementById('screen-app').style.display = 'flex';
+}
+
+// ── Tabs ───────────────────────────────────────────────────────────────────
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(x => x.classList.remove('active'));
+  t.classList.add('active');
+  document.getElementById(t.dataset.tab).classList.add('active');
+}));
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+function setBtn(id, loading) {
+  const b = document.getElementById(id);
+  b.disabled = loading;
+  if (loading) b.innerHTML = `<span class="spin${id==='btn-wa'?' spin-w':''}"></span>`;
+  else b.textContent = { 'btn-lookup-phone':'Consultar','btn-lookup-code':'Verificar código','btn-invite':'Generar link','btn-reset':'Resetear todos los datos' }[id] || b.textContent;
+}
+
+function numInput(id) {
+  document.getElementById(id).addEventListener('input', e => e.target.value = e.target.value.replace(/\D/g,'').slice(0,10));
+}
+numInput('lookup-phone'); numInput('invite-phone');
+document.getElementById('lookup-code').addEventListener('input', e => e.target.value = e.target.value.toUpperCase());
+
+function fmtDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleString('es-CO', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+}
+
+function renderResult(elId, data, type) {
+  const el = document.getElementById(elId);
+  el.className = 'result show ' + type;
+  el.innerHTML = data;
+}
+
+// ── Lookup por número ──────────────────────────────────────────────────────
+document.getElementById('btn-lookup-phone').addEventListener('click', async () => {
+  const num = document.getElementById('lookup-phone').value.trim();
+  if (num.length < 7) return;
+  setBtn('btn-lookup-phone', true);
+  try {
+    const r = await fetch(`${API}/api/admin/lookup-phone?phone=57${num}`, { headers: {'X-Admin-Key': secret} });
+    const d = await r.json();
+    if (!r.ok) { renderResult('result-phone', `<div class="result-title">❌ Error</div><p style="font-size:.85rem">${d.message||'Intenta de nuevo.'}</p>`, 'error'); }
+    else if (!d.found) {
+      renderResult('result-phone',
+        `<div class="result-icon">🆕</div>
+         <div class="result-title">No ha jugado</div>
+         <div class="result-row"><span class="result-label">Número</span><span class="result-val">${d.phoneDisplay}</span></div>
+         <p style="font-size:.82rem;color:var(--muted);margin-top:8px">Este número aún no ha hecho su tiro.</p>`, 'not-found');
+    } else if (d.isLoss) {
+      renderResult('result-phone',
+        `<div class="result-icon">🧤</div>
+         <div class="result-title">Ya jugó — Atajada</div>
+         <div class="result-row"><span class="result-label">Número</span><span class="result-val">${d.phoneDisplay}</span></div>
+         <div class="result-row"><span class="result-label">Fecha</span><span class="result-val">${fmtDate(d.playedAt)}</span></div>
+         <p style="font-size:.82rem;color:var(--muted);margin-top:8px">No ganó ningún premio.</p>`, 'loss');
+    } else {
+      const claimStatus = d.claimed
+        ? `<div class="result-row"><span class="result-label">Premio</span><span style="color:var(--err);font-weight:600">⚠️ Ya reclamado el ${fmtDate(d.claimedAt)}</span></div>`
+        : `<div class="result-row"><span class="result-label">Estado</span><span style="color:var(--ok);font-weight:600">✅ Pendiente de entrega</span></div>`;
+      renderResult('result-phone',
+        `<div class="result-icon">⚽</div>
+         <div class="result-title">Ya jugó — ¡Ganó!</div>
+         <div class="result-row"><span class="result-label">Número</span><span class="result-val">${d.phoneDisplay}</span></div>
+         <div class="result-row"><span class="result-label">Premio</span><span class="result-val">${d.prizeName}</span></div>
+         <div class="result-row"><span class="result-label">Código</span><span class="result-val" style="color:var(--accent);letter-spacing:.05em">${d.code}</span></div>
+         ${claimStatus}
+         <div class="result-row"><span class="result-label">Fecha</span><span class="result-val">${fmtDate(d.playedAt)}</span></div>`, 'win');
+    }
+  } catch { renderResult('result-phone', '<div class="result-title">❌ Sin conexión</div>', 'error'); }
+  setBtn('btn-lookup-phone', false);
+});
+
+// ── Lookup por código ──────────────────────────────────────────────────────
+document.getElementById('btn-lookup-code').addEventListener('click', async () => {
+  const code = document.getElementById('lookup-code').value.trim().toUpperCase();
+  if (!code) return;
+  currentCode = code;
+  document.getElementById('btn-claim').style.display = 'none';
+  setBtn('btn-lookup-code', true);
+  try {
+    const r = await fetch(`${API}/api/admin/lookup-code?code=${encodeURIComponent(code)}`, { headers: {'X-Admin-Key': secret} });
+    const d = await r.json();
+    if (!r.ok || !d.found) {
+      renderResult('result-code',
+        `<div class="result-icon">❓</div>
+         <div class="result-title">Código no encontrado</div>
+         <p style="font-size:.83rem;color:var(--muted);margin-top:6px">Este código no existe en el sistema. Verifica que esté bien escrito.</p>`, 'not-found');
+    } else if (d.claimed) {
+      renderResult('result-code',
+        `<div class="result-icon">🚫</div>
+         <div class="result-title">Premio ya reclamado</div>
+         <div class="result-row"><span class="result-label">Código</span><span class="result-val" style="color:var(--accent)">${d.code}</span></div>
+         <div class="result-row"><span class="result-label">Premio</span><span class="result-val">${d.prizeName}</span></div>
+         <div class="result-row"><span class="result-label">Número</span><span class="result-val">${d.phoneDisplay}</span></div>
+         <div class="result-row"><span class="result-label">Reclamado</span><span style="color:var(--err);font-weight:600">${fmtDate(d.claimedAt)}</span></div>`, 'claimed');
+    } else {
+      renderResult('result-code',
+        `<div class="result-icon">🎉</div>
+         <div class="result-title">Premio válido — No entregado</div>
+         <div class="result-row"><span class="result-label">Código</span><span class="result-val" style="color:var(--accent)">${d.code}</span></div>
+         <div class="result-row"><span class="result-label">Premio</span><span class="result-val">${d.prizeName}</span></div>
+         <div class="result-row"><span class="result-label">Número</span><span class="result-val">${d.phoneDisplay}</span></div>
+         <div class="result-row"><span class="result-label">Jugó el</span><span class="result-val">${fmtDate(d.playedAt)}</span></div>`, 'win');
+      document.getElementById('btn-claim').style.display = 'block';
+    }
+  } catch { renderResult('result-code', '<div class="result-title">❌ Sin conexión</div>', 'error'); }
+  setBtn('btn-lookup-code', false);
+});
+
+// ── Marcar como entregado ──────────────────────────────────────────────────
+document.getElementById('btn-claim').addEventListener('click', async () => {
+  if (!currentCode) return;
+  if (!confirm(`¿Confirmas la entrega del premio con código ${currentCode}?`)) return;
+  const btn = document.getElementById('btn-claim');
+  btn.disabled = true; btn.textContent = 'Registrando…';
+  try {
+    const r = await fetch(`${API}/api/admin/claim`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'X-Admin-Key': secret },
+      body: JSON.stringify({ code: currentCode })
     });
-  });
-
-  // ── Generar link ─────────────────────────────────────────────────────
-  document.getElementById('phone-input').addEventListener('input', e => {
-    e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
-  });
-
-  document.getElementById('btn-generar').addEventListener('click', async () => {
-    const num = document.getElementById('phone-input').value.trim();
-    if (num.length < 7) return showResult('Ingresa un número válido.', 'err');
-
-    const btn = document.getElementById('btn-generar');
-    const label = document.getElementById('btn-generar-label');
-    btn.disabled = true;
-    label.innerHTML = '<div class="spinner"></div>';
-
-    const phone = '57' + num;
-
-    try {
-      const r = await fetch(`${API}/api/admin/invite/create`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Admin-Key': secret },
-        body: JSON.stringify({ phone })
-      });
-      const data = await r.json();
-
-      if (r.status === 409) {
-        showResult('⚠️ Este número ya jugó durante el Mundial.', 'warn');
-      } else if (!r.ok) {
-        showResult('Error: ' + (data.message || 'Intenta de nuevo.'), 'err');
-      } else {
-        waText = data.whatsappMessage;
-        showResult(`✅ Link generado para ${data.phoneDisplay}\n\n${data.link}`, 'ok');
-        document.getElementById('btn-wa').style.display = 'flex';
-        document.getElementById('phone-input').value = '';
-        loadShots();
-      }
-    } catch {
-      showResult('No se pudo conectar con la API. Revisa internet.', 'err');
+    const d = await r.json();
+    if (r.ok) {
+      btn.style.display = 'none';
+      renderResult('result-code',
+        `<div class="result-icon">✅</div>
+         <div class="result-title">Premio entregado</div>
+         <div class="result-row"><span class="result-label">Código</span><span class="result-val" style="color:var(--accent)">${currentCode}</span></div>
+         <p style="font-size:.82rem;color:var(--muted);margin-top:8px">Registrado como entregado ahora mismo.</p>`, 'win');
+    } else {
+      btn.disabled = false; btn.textContent = '✅ Marcar como entregado';
+      alert(d.message || 'Error al registrar.');
     }
+  } catch { btn.disabled = false; btn.textContent = '✅ Marcar como entregado'; alert('Sin conexión.'); }
+});
 
-    btn.disabled = false;
-    label.textContent = 'Generar y copiar mensaje';
-  });
-
-  document.getElementById('btn-wa').addEventListener('click', () => {
-    const encoded = encodeURIComponent(waText);
-    window.open(`https://wa.me/?text=${encoded}`, '_blank');
-  });
-
-  function showResult(msg, type) {
-    const box = document.getElementById('result-box');
-    const msgEl = document.getElementById('result-msg');
-    msgEl.textContent = msg;
-    msgEl.className = 'result-msg' + (type === 'err' ? ' err-msg' : type === 'warn' ? ' warn-msg' : '');
-    box.classList.add('show');
-    if (type !== 'ok') document.getElementById('btn-wa').style.display = 'none';
-  }
-
-  // ── Cargar tiros ─────────────────────────────────────────────────────
-  async function loadShots() {
-    try {
-      const r = await fetch(`${API}/api/admin/shots`, { headers: { 'X-Admin-Key': secret } });
-      const data = await r.json();
-      const shots = data.shots || [];
-
-      document.getElementById('stat-total').textContent = shots.length;
-      document.getElementById('stat-wins').textContent = shots.filter(s => !s.isLoss).length;
-      document.getElementById('stat-losses').textContent = shots.filter(s => s.isLoss).length;
-      document.getElementById('shots-ts').textContent = 'Actualizado ' + ts();
-
-      const list = document.getElementById('shots-list');
-      if (!shots.length) {
-        list.innerHTML = '<div class="empty-state">Sin tiros aún</div>';
-        return;
-      }
-      list.innerHTML = shots.slice(0, 20).map(s => `
-        <div class="shot-item">
-          <div class="shot-icon">${s.isLoss ? '🧤' : '⚽'}</div>
-          <div class="shot-info">
-            <div class="shot-phone">${s.phoneDisplay}</div>
-            <div class="shot-prize">${s.prizeName}</div>
-            ${s.code ? `<div class="shot-code">${s.code}</div>` : ''}
-          </div>
-          <div class="shot-time">${ago(s.createdAt)}</div>
-        </div>
-      `).join('');
-    } catch {
-      document.getElementById('shots-list').innerHTML = '<div class="empty-state">Error cargando tiros</div>';
+// ── Generar link ───────────────────────────────────────────────────────────
+document.getElementById('btn-invite').addEventListener('click', async () => {
+  const num = document.getElementById('invite-phone').value.trim();
+  if (num.length < 7) return;
+  setBtn('btn-invite', true);
+  document.getElementById('invite-err').style.display = 'none';
+  document.getElementById('invite-result').classList.remove('show');
+  try {
+    const r = await fetch(`${API}/api/admin/invite/create`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'X-Admin-Key': secret },
+      body: JSON.stringify({ phone: '57' + num })
+    });
+    const d = await r.json();
+    if (r.status === 409) {
+      document.getElementById('invite-err').textContent = '⚠️ Este número ya jugó durante el Mundial.';
+      document.getElementById('invite-err').style.display = 'block';
+    } else if (!r.ok) {
+      document.getElementById('invite-err').textContent = d.message || 'Error al generar link.';
+      document.getElementById('invite-err').style.display = 'block';
+    } else {
+      waText = d.whatsappMessage;
+      document.getElementById('invite-link-box').textContent = d.link;
+      document.getElementById('invite-result').classList.add('show');
+      document.getElementById('invite-phone').value = '';
     }
+  } catch {
+    document.getElementById('invite-err').textContent = 'Sin conexión con la API.';
+    document.getElementById('invite-err').style.display = 'block';
   }
+  setBtn('btn-invite', false);
+  document.getElementById('btn-invite').textContent = 'Generar link';
+});
 
-  // ── Cargar pendientes OTP ─────────────────────────────────────────────
-  async function loadPending() {
-    try {
-      const r = await fetch(`${API}/api/admin/otp-pending`, { headers: { 'X-Admin-Key': secret } });
-      const data = await r.json();
-      const pending = data.pending || [];
-      document.getElementById('pending-ts').textContent = 'Actualizado ' + ts();
+document.getElementById('btn-wa').addEventListener('click', () => {
+  window.open(`https://wa.me/?text=${encodeURIComponent(waText)}`, '_blank');
+});
 
-      const list = document.getElementById('pending-list');
-      if (!pending.length) {
-        list.innerHTML = '<div class="empty-state">Sin códigos pendientes</div>';
-        return;
-      }
-      list.innerHTML = pending.map(p => `
-        <div class="shot-item">
-          <div class="shot-icon">📲</div>
-          <div class="shot-info">
-            <div class="shot-phone">${p.phoneDisplay}</div>
-            <div class="shot-prize">Código: <strong style="color:var(--accent)">${p.code}</strong></div>
-          </div>
-          <div>
-            <button onclick="sendOtp('${p.phoneDisplay}','${p.code}')" style="background:var(--accent);color:#0d0120;border:none;border-radius:999px;padding:8px 14px;font:700 .78rem 'DM Sans',sans-serif;cursor:pointer;">
-              WhatsApp
-            </button>
-          </div>
-        </div>
-      `).join('');
-    } catch {
-      document.getElementById('pending-list').innerHTML = '<div class="empty-state">Error cargando pendientes</div>';
-    }
-  }
+// ── Saludo inicial ─────────────────────────────────────────────────────────
+document.getElementById('btn-first-reply').addEventListener('click', () => {
+  const msg = `⚽ ¡Hola! Gracias por escribir a *Mala Vida Fast Food*.\n\nTenemos un *penalti del Mundial 2026* con premio 🎁\n\nPara jugar:\n1️⃣ Confírmame tu número de WhatsApp\n2️⃣ Te envío *tu link personal* en seguida\n\nReglas:\n• 1 penalti por número durante el Mundial\n• Premio se reclama por este chat`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+});
 
-  function sendOtp(phoneDisplay, code) {
-    const msg = `⚽ *Mala Vida — Código penalti Mundial 2026*\n\nTu código para jugar es: *${code}*\n\nIngrésalo en la pantalla del juego. Válido 15 minutos.\nUn solo penalti por número durante el Mundial. ¡Mucha suerte! 🥅`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
-  }
-
-  // ── Refresh buttons ───────────────────────────────────────────────────
-  document.getElementById('btn-refresh-shots').addEventListener('click', loadShots);
-  document.getElementById('btn-refresh-pending').addEventListener('click', loadPending);
-
-  // ── Reset ─────────────────────────────────────────────────────────────
-  document.getElementById('btn-reset').addEventListener('click', async () => {
-    if (!confirm('¿Seguro? Esto borra TODOS los tiros registrados. No se puede deshacer.')) return;
-    const btn = document.getElementById('btn-reset');
-    const msg = document.getElementById('reset-msg');
-    btn.disabled = true;
-    btn.textContent = 'Reseteando…';
-    try {
-      const r = await fetch(`${API}/api/admin/reset`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Admin-Key': secret }
-      });
-      const data = await r.json();
-      if (r.ok) {
-        msg.style.display = 'block';
-        msg.style.color = 'var(--ok)';
-        msg.textContent = '✅ ' + data.message;
-        loadShots();
-      } else {
-        msg.style.display = 'block';
-        msg.style.color = 'var(--err)';
-        msg.textContent = '❌ Error: ' + (data.message || 'Intenta de nuevo.');
-      }
-    } catch {
-      msg.style.display = 'block';
-      msg.style.color = 'var(--err)';
-      msg.textContent = '❌ No se pudo conectar con la API.';
-    }
-    btn.disabled = false;
-    btn.textContent = 'Resetear todos los datos';
-  });
+// ── Reset ──────────────────────────────────────────────────────────────────
+document.getElementById('btn-reset').addEventListener('click', async () => {
+  if (!confirm('¿Seguro? Borra TODOS los tiros registrados. No se puede deshacer.')) return;
+  setBtn('btn-reset', true);
+  const msg = document.getElementById('reset-msg');
+  try {
+    const r = await fetch(`${API}/api/admin/reset`, { method:'POST', headers:{'Content-Type':'application/json','X-Admin-Key':secret} });
+    const d = await r.json();
+    msg.style.display = 'block';
+    if (r.ok) { msg.style.color = 'var(--ok)'; msg.textContent = '✅ ' + d.message; }
+    else       { msg.style.color = 'var(--err)'; msg.textContent = '❌ ' + (d.message||'Error.'); }
+  } catch { msg.style.display='block'; msg.style.color='var(--err)'; msg.textContent='❌ Sin conexión.'; }
+  setBtn('btn-reset', false);
+  document.getElementById('btn-reset').textContent = 'Resetear todos los datos';
+});
 </script>
 </body>
 </html>
