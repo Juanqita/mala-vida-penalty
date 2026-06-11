@@ -20,7 +20,7 @@ const DATABASE_URL   = process.env.DATABASE_URL;
 
 // ── DB ─────────────────────────────────────────────────────────────────────
 const pool = new Pool({
-  connectionString: DATABASE_URL,
+  connectionString: DATABASE_URL + '?family=4',
   ssl: { rejectUnauthorized: false }
 });
 
