@@ -444,10 +444,19 @@ const server = createServer(async (req, res) => {
     // POST /api/register
     if (url.pathname === '/api/register') {
       if (!isCampaignActive()) { sendJson(res, 403, { error: 'campaign_inactive' }, origin); return; }
-      const { rows: sessions } = await pool.query(
-        'SELECT * FROM sessions WHERE token=$1 AND expires_at > NOW()', [body.sessionToken]);
-      if (!sessions.length) { sendJson(res, 401, { error: 'invalid_session' }, origin); return; }
-      const phone  = sessions[0].phone;
+
+      // Acepta sessionToken O phone directo (compatibilidad con frontend)
+      let phone = null;
+      if (body.sessionToken) {
+        const { rows: sessions } = await pool.query(
+          'SELECT * FROM sessions WHERE token=$1 AND expires_at > NOW()', [body.sessionToken]);
+        if (sessions.length) phone = sessions[0].phone;
+      }
+      if (!phone) {
+        phone = normalizePhone(body.phone, body.countryCode);
+      }
+      if (!phone) { sendJson(res, 401, { error: 'invalid_session', message: 'Sesión o teléfono inválido.' }, origin); return; }
+
       const result = body.result;
       if (!result || typeof result !== 'object') { sendJson(res, 400, { error: 'invalid_result' }, origin); return; }
       try {
